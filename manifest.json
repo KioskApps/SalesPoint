@@ -1,0 +1,43 @@
+{
+    "app": {
+        "background": {
+            "scripts": ["background.js"]
+        }
+    },
+    "manifest_version": 2,
+    "name": "SalesPoint",
+    "version": "1.1.0",
+    
+    "default_locale": "en",
+    "description": "Point-of-Sale checkout kiosk app for Chrome",
+    "icons": { 
+        "16": "images/icon_16.png", 
+        "48": "images/icon_48.png", 
+        "128": "images/icon_128.png" 
+    },
+    
+    "author": "ChromeKioskApps@gmail.com",
+    "kiosk_enabled": true,
+    "minimum_chrome_version": "37",
+    "offline_enabled": true,
+    "optional_permissions": [ 
+        {
+            "usbDevices": [
+                {
+                    "vendorId": 2338, 
+                    "productId": 32772
+                }
+            ]
+        }
+    ], 
+    "permissions": [
+        "accessibilityFeatures.read",
+        "accessibilityFeatures.modify",
+        "hid"
+    ],   
+    "sandbox": {
+        "pages": [
+            "scripts/sandbox-scripts.html"
+        ]
+    }
+}
