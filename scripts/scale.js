@@ -15,7 +15,6 @@
     
     var hasPermission = false;
     var connection;
-    var lastWeight;
     var weightAttempts = {};
     
     scale.getWeightOunces = function(callback) {
@@ -51,13 +50,10 @@
                 if (attempt.attempt < scale.accuracyAttemptLimit) {
                     if (weight.valid) {
                         if (weight.stable) {
-                            console.log('got weight: ' + weight.amount);
                             if (weight.amount === attempt.lastWeight) {
-                                console.log('weight consecutive');
                                 attempt.consecutive = attempt.consecutive + 1;
                             }
                             else {
-                                console.log('weight changing');
                                 attempt.consecutive = 0;
                             }
                             attempt.lastWeight = weight.amount;
@@ -66,7 +62,6 @@
                                 getStableWeight(callback, attemptId);
                             }
                             else if (typeof callback === 'function') {
-                                console.log('final weight: ' + weight.amount);
                                 callback(weight);
                             }
                         }
@@ -80,7 +75,6 @@
                     }
                 }
                 else if (typeof callback === 'function') {
-                    console.log('attempt timeout');
                     callback();
                 }
                 attempt.attempt = attempt.attempt + 1;
@@ -148,7 +142,6 @@
                 if (weight.ounces) {
                     weight.amount = parseFloat((weight.amount * 0.1).toFixed(1));
                 }
-                lastWeight = weight.amount;
                 
                 if (typeof callback === 'function') {
                     callback(weight);
