@@ -7,17 +7,19 @@ function Receipt() {
     
     this.addItem = function(id)
     {
-        var product = data.productsSku[id];
-        if (product === undefined) {
-            product = data.productsUpc[id];
+        var receiptItem = id;
+        if (typeof id === 'string') {
+            var product = data.productsSku[id];
+            if (product === undefined) {
+                product = data.productsUpc[id];
+            }
+            receiptItem = new ReceiptItem(product);
         }
-        if (product !== undefined) {
-            var receiptItem = new RecieptItem(product);
-            self.recieptItems.push(receiptItem);
-            var receipt = $('.receipt-container .receipt');
-            var receiptItemHTML = receiptItem.getReceiptItem();
-            receipt.append(receiptItemHTML);
-        }
+        
+        self.recieptItems.push(receiptItem);
+        var receipt = $('.receipt-container .receipt');
+        var receiptItemHTML = receiptItem.getReceiptItem();
+        receipt.append(receiptItemHTML);
     };
     
     this.getSubTotal = function() {

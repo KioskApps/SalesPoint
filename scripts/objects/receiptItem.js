@@ -1,4 +1,4 @@
-function RecieptItem(product)
+function ReceiptItem(product)
 {
     var self = this;
     
@@ -30,7 +30,13 @@ function RecieptItem(product)
     {
         var receiptItem = $('<div class="receipt-item"></div>');
         receiptItem.append('<span class="product-name">' + self.product.name + '</span>');
-        receiptItem.append('<span class="product-total"><span class="currency">' + CurrentSession.currency + '</span><span class="total">' + FormatCurrency(self.getTotalPrice(), true) + '</span></span>');
+        var productTotal = $('<span/>').addClass('product-total');
+        if (self.weight > 0) {
+            var weight = self.weight + '' + self.product.weightUnit + ' ';
+            productTotal.append($('<span/>').addClass('weight').html(weight));
+        }
+        productTotal.append($('<span/>').addClass('total').html(FormatCurrency(self.getTotalPrice()), true));
+        receiptItem.append(productTotal);
         return receiptItem;
     };
 }

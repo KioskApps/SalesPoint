@@ -238,11 +238,12 @@ function Lookup_AfterSearchHandler(e)
 }
 function Lookup_SearchItem_ClickHandler(e)
 {
-    var sku = $('.title .sku', $(this)).html();
-    AddItemToReceipt(sku);
-    
+    var sku = $('.title .sku', $(this)).html();    
+
     OpenPage('#page-checkout', PAGE_OUT_POSITION.BOTTOM);
     $('#page-lookup #item-search-query').val('');
+    
+    AddItemToReceipt(sku);
 }
 function Lookup_ItemSearchQuery_KeyUpHandler(e)
 {
@@ -329,8 +330,8 @@ function TypeInSKU_Continue_ClickHandler(e)
 {
     scanner.scanning = true;
     var sku = $('#overlay-type-in-sku #sku-query').val();
-    AddItemToReceipt(sku);
     CloseOverlay($('#overlay-type-in-sku'), $('#page-checkout')); 
+    AddItemToReceipt(sku);
 }
 function CallAttendent_Continue_ClickHandler(e)
 {
@@ -398,20 +399,68 @@ function ProductSearch(query)
 
 function AddItemToReceipt(sku)
 {
-    CurrentSession.receipt.addItem(sku);
-    var receipt = $('.receipt-container .receipt');
-    receipt.scrollTop(receipt.prop("scrollHeight"));
-    $('.receipt-container .receipt-totals .receipt-subtotal .amount').html(FormatCurrency(CurrentSession.receipt.getSubTotal()));
-    $('.receipt-container .receipt-totals .receipt-tax .amount').html(FormatCurrency(CurrentSession.receipt.getTaxes()));
-    $('.receipt-container .receipt-totals .receipt-total .amount').html(FormatCurrency(CurrentSession.receipt.getGrandTotal()));
-    
-    if(CurrentSession.receipt.recieptItems.length > 0)
-    {
-        $('#page-checkout #pay-now').addClass('active');
+    var product = sku;
+    if (typeof sku === 'string') {
+        product = data.productsSku[sku];
+        if (typeof product === 'undefined') {
+            product = data.productsPlu[sku];
+        }
     }
-    else
-    {
-        $('#page-checkout #pay-now').removeClass('active');
+    
+    if (typeof product === 'undefined') {
+        ShowError('Invalid product, please see an attendant for assistance');
+        return;
+    }
+    
+    if (product.weightPrice > 0) {
+        setTimeout(function() {
+            //Allow for CSS transitions
+            OpenOverlay('overlay-scale', $('#page-checkout'));
+        }, 1000);
+        
+        var attempts = 0;
+        var getWeight = function() {
+            scale.getWeightOunces(function(weight) {
+                if (weight && weight.amount > 0) {
+                    var receiptItem = new ReceiptItem(product);
+                    receiptItem.weight = weight.amount;
+
+                    CloseOverlay($('#overlay-scale'), $('#page-checkout'));
+                    AddItemToReceipt(receiptItem);
+                }
+                else {
+                    attempts++;
+                    if (attempts < 5) {
+                        setTimeout(getWeight, 1000);
+                    }
+                    else {
+                        CloseOverlay($('#overlay-scale'), $('#page-checkout'));
+                        //Allow for CSS transitions
+                        setTimeout(function() {
+                            ShowError('An item was not placed on the scale');
+                        }, 1000);
+                    }
+                }
+            });
+        };
+        setTimeout(getWeight, 1000);
+    }
+    else {
+        CurrentSession.receipt.addItem(sku);
+        var receipt = $('.receipt-container .receipt');
+        receipt.scrollTop(receipt.prop("scrollHeight"));
+        $('.receipt-container .receipt-totals .receipt-subtotal .amount').html(FormatCurrency(CurrentSession.receipt.getSubTotal()));
+        $('.receipt-container .receipt-totals .receipt-tax .amount').html(FormatCurrency(CurrentSession.receipt.getTaxes()));
+        $('.receipt-container .receipt-totals .receipt-total .amount').html(FormatCurrency(CurrentSession.receipt.getGrandTotal()));
+
+        if(CurrentSession.receipt.recieptItems.length > 0)
+        {
+            $('#page-checkout #pay-now').addClass('active');
+        }
+        else
+        {
+            $('#page-checkout #pay-now').removeClass('active');
+        }
     }
 }
 

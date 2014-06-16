@@ -3,7 +3,9 @@
     var scale = {};
     window.scale = scale;
     
-    scale.accuracyDelay = 1000;
+    scale.accuracyDelay = 500;
+    scale.accuracyConsecutive = 3;
+    scale.accuracyAttemptLimit = 20;
     
     var DEVICE_INFO = {
         'vendorId': 2338, //0x0922
@@ -13,10 +15,12 @@
     
     var hasPermission = false;
     var connection;
+    var lastWeight;
+    var weightAttempts = {};
     
     scale.getWeightOunces = function(callback) {
         getStableWeight(function(weight) {
-            if (weight.grams) {
+            if (weight && weight.grams) {
                 weight.amount = weight.amount * GRAMS_TO_OUNCES;
                 weight.grams = false;
                 weight.ounces = true;
@@ -28,22 +32,58 @@
         });
     };
     
-    var getStableWeight = function(callback) {
+    var getStableWeight = function(callback, attemptId) {
+        if (typeof attemptId === 'undefined') {
+            attemptId = 'ScaleRead' + Math.floor((Math.random() * 899) + 100);
+        }
+        if (typeof weightAttempts[attemptId] === 'undefined') {
+            weightAttempts[attemptId] = {
+                'attempt': 0,
+                'lastWeight': 0.0,
+                'consecutive': 0
+            };
+        }
+        
+        var attempt = weightAttempts[attemptId];
+        
         setTimeout(function() {
             read(function(weight) {
-                if (weight.valid) {
-                    if (weight.stable) {
-                        if (typeof callback === 'function') {
-                            callback(weight);
+                if (attempt.attempt < scale.accuracyAttemptLimit) {
+                    if (weight.valid) {
+                        if (weight.stable) {
+                            console.log('got weight: ' + weight.amount);
+                            if (weight.amount === attempt.lastWeight) {
+                                console.log('weight consecutive');
+                                attempt.consecutive = attempt.consecutive + 1;
+                            }
+                            else {
+                                console.log('weight changing');
+                                attempt.consecutive = 0;
+                            }
+                            attempt.lastWeight = weight.amount;
+
+                            if (attempt.consecutive < scale.accuracyConsecutive) {
+                                getStableWeight(callback, attemptId);
+                            }
+                            else if (typeof callback === 'function') {
+                                console.log('final weight: ' + weight.amount);
+                                callback(weight);
+                            }
+                        }
+                        else {
+                            getStableWeight(callback, attemptId);
                         }
                     }
                     else {
-                        getStableWeight(callback);
+                        delete weightAttempts[attemptId];
+                        throw new Error('There is a problem with the scale');
                     }
                 }
-                else {
-                    throw new Error('There is a problem with the scale');
+                else if (typeof callback === 'function') {
+                    console.log('attempt timeout');
+                    callback();
                 }
+                attempt.attempt = attempt.attempt + 1;
             });
         }, scale.accuracyDelay);
     };
@@ -108,6 +148,7 @@
                 if (weight.ounces) {
                     weight.amount = parseFloat((weight.amount * 0.1).toFixed(1));
                 }
+                lastWeight = weight.amount;
                 
                 if (typeof callback === 'function') {
                     callback(weight);

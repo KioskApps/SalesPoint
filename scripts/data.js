@@ -6,6 +6,7 @@ data.SPREADSHEET_ID = '1-ZzeKWI1VCYCUWVveI4KZVWHaMdhOy50yHyzFDmARJs';
 data.products = {};
 data.productsSku = {};
 data.productsUpc = {};
+data.productsPlu = {};
 data.productArray = [];
 
 
@@ -22,6 +23,9 @@ data.initialize = function() {
                 data.products[p.sku] = p;
                 data.productsSku[p.sku] = p;
                 data.productsUpc[p.upc] = p;
+                if (p.plu > 0) {
+                    data.productsPlu[p.plu] = p;
+                }
                 data.productArray.push(p);
             }
         }

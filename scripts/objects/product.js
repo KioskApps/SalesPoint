@@ -8,7 +8,7 @@ function Product()
     this.description = '';
     this.unitPrice = 0.00;
     this.weightPrice = 0.00;
-    this.weightUnit = 'lbs';
+    this.weightUnit = 'oz';
     this.discount = 0.00;
     
     this.upc = -1;
@@ -22,11 +22,11 @@ function Product()
         
         if(self.unitPrice > 0.00)
         {
-           priceData = '<span class="currency">' + CurrentSession.currency + '</span><span class="price">' + self.unitPrice + '</span><span class="per"></span><span class="unit">each</span>';
+           priceData = '<span class="currency">' + CurrentSession.currency + '</span><span class="price">' + self.unitPrice + '</span><span class="per"></span><span class="unit"> each</span>';
         }
         else if(self.weightPrice > 0.00)
         {
-             priceData = '<span class="currency">$</span><span class="price">' + self.weightPrice + '</span><span class="per">per</span><span class="unit">' + self.weightUnit + '</span>';
+             priceData = '<span class="currency">' + CurrentSession.currency + '</span><span class="price">' + self.weightPrice + '</span><span class="per"> per </span><span class="unit">' + self.weightUnit + '</span>';
         }
         else
         {
@@ -47,5 +47,5 @@ function Product()
         
         var searchResultString = searchResultHTML.join('');
         return searchResultString;
-    }
+    };
 }
