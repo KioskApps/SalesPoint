@@ -1,0 +1,78 @@
+{
+    "storeName": {
+        "message": "I/O Mart",
+        "description": "The name of the store"
+    },
+    "startButtonEnglish": {
+        "message": "Start English",
+        "description": "Start the application in English"
+    },
+    "startButtonSpanish": {
+        "message": "Start Espa&ntilde;ol",
+        "description": "Start the application in Spanish"
+    },
+    "callAttendent": {
+        "message": "Llamar al asistente",
+        "description": "Notifies an attendant that help is needed"
+    },
+    "returnMainMenu": {
+        "message": "Cancelar Transacci&oacute;n",
+        "description": "Cancels the current transaction and returns to the main menu"
+    },
+    "returnCheckout": {
+        "message": "Volver a la comprobaci&oacute;n",
+        "description": "Returns to the checkout screen"
+    },
+    
+    "pageCheckoutTitle": {
+        "message": "Caja",
+        "description": "The checkout page title"
+    },
+    "pageCheckoutReceiptHeader": {
+        "message": "Mis Art&iacute;culos",
+        "description": "The header of the receipt items"
+    },
+    "pageCheckoutSubtotalTitle": {
+        "message": "Total Parcial",
+        "description": "The subtotal of all the receipt items"
+    },
+    "pageCheckoutTaxTitle": {
+        "message": "Impuesto",
+        "description": "The total tax of all the receipt items"
+    },
+    "pageCheckoutTotalTitle": {
+        "message": "Total",
+        "description": "The grand total of all the receipt items"
+    },
+    
+    "lookupItemTitle": {
+        "message": "Buscar art&iacute;culo",
+        "description": "Title for the Lookup Item button"
+    },
+    "lookupItemDescription": {
+        "message": "Browse through our products and find an item.",
+        "description": "Description for the Lookup Item button"
+    },
+    "largeItemTitle": {
+        "message": "Gran art&iacute;culo",
+        "description": "Title for the Large Item button"
+    },
+    "largeItemDescription": {
+        "message": "Call an attendant to scan a large item in your cart.",
+        "description": "Description for the Large Item button"
+    },
+    "typeInSkuTitle": {
+        "message": "Teclear en SKU",
+        "description": "Title for the Type In SKU button"
+    },
+    "typeInSkuDescription": {
+        "message": "Add an item using the products SKU number.",
+        "description": "Description for the Type In SKU button"
+    },
+    "payNow": {
+        "message": "Pague ahora",
+        "description": "Starts the payment process"
+    }
+    
+    
+}
