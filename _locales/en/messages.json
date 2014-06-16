@@ -8,7 +8,7 @@
         "description": "Start the application in English"
     },
     "startButtonSpanish": {
-        "message": "Start Espa&ntilde;ol",
+        "message": "Comience Espa&ntildeol",
         "description": "Start the application in Spanish"
     },
     "callAttendent": {
@@ -23,28 +23,40 @@
         "message": "Return to Checkout",
         "description": "Returns to the checkout screen"
     },
+    "returnPaymentTypes": {
+        "message": "Back to Payment Types",
+        "description": "Button to return to the payment options page"
+    },
+    "touchToType": {
+        "message": "Touch to Type",
+        "description": "Placeholder on input boxes that instruct the user to touch to being typing"
+    },
+    
+    "receiptHeader": {
+        "message": "My Items",
+        "description": "The header of the receipt items"
+    },
+    "subtotalTitle": {
+        "message": "Subtotal",
+        "description": "The subtotal of all the receipt items"
+    },
+    "taxTitle": {
+        "message": "Tax",
+        "description": "The total tax of all the receipt items"
+    },
+    "totalTitle": {
+        "message": "Total",
+        "description": "The grand total of all the receipt items"
+    },
     
     "pageCheckoutTitle": {
         "message": "Checkout",
         "description": "The checkout page title"
     },
-    "pageCheckoutReceiptHeader": {
-        "message": "My Items",
-        "description": "The header of the receipt items"
+    "pageCheckoutInstructions": {
+        "message": "<p>Scan an item, or choose an option below</p>",
+        "description": "Instruct user to scan their items or select an option"
     },
-    "pageCheckoutSubtotalTitle": {
-        "message": "Subtotal",
-        "description": "The subtotal of all the receipt items"
-    },
-    "pageCheckoutTaxTitle": {
-        "message": "Tax",
-        "description": "The total tax of all the receipt items"
-    },
-    "pageCheckoutTotalTitle": {
-        "message": "Total",
-        "description": "The grand total of all the receipt items"
-    },
-    
     "lookupItemTitle": {
         "message": "Lookup Item",
         "description": "Title for the Lookup Item button"
@@ -72,7 +84,104 @@
     "payNow": {
         "message": "Pay Now",
         "description": "Starts the payment process"
+    },
+    
+    "pageLookupTitle": {
+        "message": "Product Search",
+        "description": "Title for the product search page"
+    },
+    "pageLookupInstructions": {
+        "message": "<p>Use the on-screen keyboard to find a product by searching for the product name</p>",
+        "description": "Instruct the user to look up an item by the product's name"
+    },
+    
+    "pagePaymentOptionsTitle": {
+        "message": "Payment Method",
+        "description": "Title for the payment method page"
+    },
+    "pagePaymentOptionsInstructions": {
+        "message": "<p>Select your method of payment</p>",
+        "description": "Instruct the user to choose a payment option"
+    },
+    "pagePaymentCard": {
+        "message": "Card",
+        "description": "The card payment option"
+    },
+    "pagePaymentCardDescription": {
+        "message": "Credit/Debit",
+        "description": "The card payment description"
+    },
+    "pagePaymentCash": {
+        "message": "Cash",
+        "description": "The cash payment option"
+    },
+    "pagePaymentCashDescription": {
+        "message": "Bills and Coins",
+        "description": "The cash payment description"
+    },
+    "pagePaymentCheck": {
+        "message": "Check",
+        "description": "The check payment option"
+    },
+    "pagePaymentCheckDescription": {
+        "message": "Paper or Electronic",
+        "description": "The check payment description"
+    },
+    "pagePaymentOther": {
+        "message": "Other",
+        "description": "Other types of payment options"
+    },
+    "pagePaymentOtherDescription": {
+        "message": "Gift Card, WIC, etc...",
+        "description": "Description of other payment options"
+    },
+    
+    "pageInvalidPaymentTitle": {
+        "message": "Payment",
+        "description": "Title for the invalid payment page"
+    },
+    "pageInvalidPaymentInstructions": {
+        "message": "<p>We're sorry, this device is currently set to only accept Credit Card or Debit as payment types. We apologize for the inconvenience.</p><p>Please select \"Back to Payment Types\" to choose a valid payment type, or wait for an attendant to complete your transaction.</p>",
+        "description": "Detailed message indicating that the selected payment method is invalid, and to return to the payment options page"
+    },
+    
+    "pagePaymentTitle": {
+        "message": "Payment",
+        "description": "Title of the payment page"
+    },
+    "pagePaymentInstructions": {
+        "message": "Use the PIN pad to complete your transaction",
+        "description": "Instruct the user to use the PIN pad to complete their transaction"
+    },
+    
+    "pageCompleteThanks": {
+        "message": "Thank you for shopping with us!",
+        "description": "Thank the user for shopping at the store"
+    },
+    "pageCompleteBags": {
+        "message": "Please remove your bags from the bagging area and take your receipt.",
+        "description": "Instruct the user to remove their bags and take their receipt"
+    },
+    
+    "overlayCancel": {
+        "message": "Cancel",
+        "description": "Cancel button"
+    },
+    "overlayContinue": {
+        "message": "Continue",
+        "description": "Continue button"
+    },
+    
+    "overlayLargeItem": {
+        "message": "Please wait and an attendant will be with you shortly to scan your large item.",
+        "description": "Instruct the user to wait for an attendant to scan their large item"
+    },
+    "overlaySku": {
+        "message": "Use the on screen keyboard to enter a product's SKU, then select \"Continue\" to add it to your items.",
+        "description": "Instruct the user to use the on screen keyboard to type in an SKU"
+    },
+    "overlayCallAttendant": {
+        "message": "An attendant has been notified and will be with you shortly. Select \"Continue\" to resume checking out.",
+        "description": "Instruct the user that an attendant will assist them momentarily"        
     }
-    
-    
 }

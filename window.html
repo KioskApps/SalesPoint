@@ -24,6 +24,16 @@
     </head>
     <body>
         <div id="transition-wrapper">
+            <div class="page" id="page-startup">
+                <div class="page-container">
+                    <header>SalesPoint</header>
+                    <div class="content">
+                        <img class="icon" src="images/icon_128.png" alt=""/>
+                        <div class="start">Touch to Start</div>
+                    </div>
+                    <footer></footer>
+                </div>
+            </div>
             <div class="page" id="page-initial">
                 <div class="page-container">
                     <header>
@@ -36,7 +46,7 @@
                         </video>
                         <div class="user-options">
                             <button class="start-button english">Start English</button>
-                            <button class="start-button spanish">Start Spanish</button>
+                            <button class="start-button spanish">Comience Espa&ntildeol</button>
                         </div>
                     </div>
                     <footer></footer>
@@ -133,7 +143,7 @@
                             <div class="instructions">
                                 <p>Use the on-screen keyboard to find a product by searching for the product name.</p>
                             </div>
-                            <input type="text" id="item-search-query" />
+                            <input type="text" id="item-search-query" placeholder="Touch to Type"/>
                             <progress id="search-timer-progress" value="0" max="200"></progress>
                         </div>
                         <div class="search-results"></div>
@@ -188,12 +198,12 @@
                                     <div class="title">Cash</div>
                                     <div class="description">Bills and Coins</div>
                                 </button>
-                                <button class="payment-method cash invalid">
+                                <button class="payment-method check invalid">
                                     <img class="icon" src="images/checks.png" width="100" height="100" />
                                     <div class="title">Check</div>
                                     <div class="description">Paper or Electronic</div>
                                 </button>
-                                <button class="payment-method cash invalid">
+                                <button class="payment-method other invalid">
                                     <img class="icon" src="images/other.png" width="100" height="100" />
                                     <div class="title">Other</div>
                                     <div class="description">Gift Card, WIC, etc...</div>
@@ -323,7 +333,7 @@
                 <div id="overlay-large-item" class="foreground-content">
                     <img class="foreground-image" src="images/large-item.png" width="200" height="200" />
                     <div class="foreground-form">
-                        <p>Please wait and an attendant will be with you shortly to scan your large item.</p>
+                        <p class="message">Please wait and an attendant will be with you shortly to scan your large item.</p>
                         <div class="actions">
                             <button class="cancel">Cancel</button>
                         </div>
@@ -332,9 +342,9 @@
                 <div id="overlay-type-in-sku" class="foreground-content">
                     <img class="foreground-image" src="images/enter-sku.png" width="200" height="200" />
                     <div class="foreground-form">
-                        <p>Use the on screen keyboard to enter a product's SKU, then select "Continue" to add it to your items.</p>
+                        <p class="message">Use the on screen keyboard to enter a product's SKU, then select "Continue" to add it to your items.</p>
                         <div class="user-input">
-                            <input id="sku-query" type="text" />
+                            <input id="sku-query" type="text" placeholder="Touch to Type"/>
                             <div class="actions">
                                 <button class="cancel">Cancel</button>
                                 <button class="continue">Continue</button>
@@ -345,7 +355,7 @@
                 <div id="overlay-call-attendant" class="foreground-content">
                     <img class="foreground-image" src="images/call-attendant.png" width="200" height="200" />
                     <div class="foreground-form">
-                        <p>An attendant has been notified and will be with you shortly. Select "Continue" to resume checking out.</p>
+                        <p class="message">An attendant has been notified and will be with you shortly. Select "Continue" to resume checking out.</p>
                         <div class="actions">
                             <button class="continue">Continue</button>
                         </div>

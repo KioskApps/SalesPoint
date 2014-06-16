@@ -8,7 +8,7 @@
         "description": "Start the application in English"
     },
     "startButtonSpanish": {
-        "message": "Start Espa&ntilde;ol",
+        "message": "Comience Espa&ntildeol",
         "description": "Start the application in Spanish"
     },
     "callAttendent": {
@@ -20,37 +20,49 @@
         "description": "Cancels the current transaction and returns to the main menu"
     },
     "returnCheckout": {
-        "message": "Volver a la comprobaci&oacute;n",
+        "message": "Volver a la Comprobaci&oacute;n",
         "description": "Returns to the checkout screen"
+    },
+    "returnPaymentTypes": {
+        "message": "Volver a Tipos de Pago",
+        "description": "Button to return to the payment options page"
+    },
+    "touchToType": {
+        "message": "Tocar a Tipo",
+        "description": "Placeholder on input boxes that instruct the user to touch to being typing"
+    },
+    
+    "receiptHeader": {
+        "message": "Mis &Iacute;tems",
+        "description": "The header of the receipt items"
+    },
+    "subtotalTitle": {
+        "message": "Total Parcial",
+        "description": "The subtotal of all the receipt items"
+    },
+    "taxTitle": {
+        "message": "Impuesto",
+        "description": "The total tax of all the receipt items"
+    },
+    "totalTitle": {
+        "message": "Total",
+        "description": "The grand total of all the receipt items"
     },
     
     "pageCheckoutTitle": {
         "message": "Caja",
         "description": "The checkout page title"
     },
-    "pageCheckoutReceiptHeader": {
-        "message": "Mis Art&iacute;culos",
-        "description": "The header of the receipt items"
+    "pageCheckoutInstructions": {
+        "message": "<p>Explore el objeto o elija una opci&oacute;n a continuaci&oacute;n.</p>",
+        "description": "Instruct user to scan their items or select an option"
     },
-    "pageCheckoutSubtotalTitle": {
-        "message": "Total Parcial",
-        "description": "The subtotal of all the receipt items"
-    },
-    "pageCheckoutTaxTitle": {
-        "message": "Impuesto",
-        "description": "The total tax of all the receipt items"
-    },
-    "pageCheckoutTotalTitle": {
-        "message": "Total",
-        "description": "The grand total of all the receipt items"
-    },
-    
     "lookupItemTitle": {
         "message": "Buscar art&iacute;culo",
         "description": "Title for the Lookup Item button"
     },
     "lookupItemDescription": {
-        "message": "Browse through our products and find an item.",
+        "message": "Navegar a trav&eacute;s de nuestros productos y encontrar un elemento.",
         "description": "Description for the Lookup Item button"
     },
     "largeItemTitle": {
@@ -58,7 +70,7 @@
         "description": "Title for the Large Item button"
     },
     "largeItemDescription": {
-        "message": "Call an attendant to scan a large item in your cart.",
+        "message": "Llame a un asistente para escanear un art&iacute;culo grande en su cesta.",
         "description": "Description for the Large Item button"
     },
     "typeInSkuTitle": {
@@ -66,13 +78,110 @@
         "description": "Title for the Type In SKU button"
     },
     "typeInSkuDescription": {
-        "message": "Add an item using the products SKU number.",
+        "message": "A&ntilde;adir un elemento utilizando los productos n&uacute;mero de SKU.",
         "description": "Description for the Type In SKU button"
     },
     "payNow": {
         "message": "Pague ahora",
         "description": "Starts the payment process"
+    },
+    
+    "pageLookupTitle": {
+        "message": "Producto B&uacute;squeda",
+        "description": "Title for the product search page"
+    },
+    "pageLookupInstructions": {
+        "message": "<p>Utilice el teclado en pantalla para encontrar un producto mediante la b&uacute;squeda de el nombre del producto</p>",
+        "description": "Instruct the user to look up an item by the product's name"
+    },
+    
+    "pagePaymentOptionsTitle": {
+        "message": "M&eacute;todo de Pago",
+        "description": "Title for the payment method page"
+    },
+    "pagePaymentOptionsInstructions": {
+        "message": "<p>Seleccione su forma de pago</p>",
+        "description": "Instruct the user to choose a payment option"
+    },
+    "pagePaymentCard": {
+        "message": "Tarjeta",
+        "description": "The card payment option"
+    },
+    "pagePaymentCardDescription": {
+        "message": "de Cr&eacute;dito / D&eacutebito",
+        "description": "The card payment description"
+    },
+    "pagePaymentCash": {
+        "message": "Efectivo",
+        "description": "The cash payment option"
+    },
+    "pagePaymentCashDescription": {
+        "message": "Billetes y Monedas",
+        "description": "The cash payment description"
+    },
+    "pagePaymentCheck": {
+        "message": "Cheque",
+        "description": "The check payment option"
+    },
+    "pagePaymentCheckDescription": {
+        "message": "Papel o Electr&oacute;nico",
+        "description": "The check payment description"
+    },
+    "pagePaymentOther": {
+        "message": "Otro",
+        "description": "Other types of payment options"
+    },
+    "pagePaymentOtherDescription": {
+        "message": "Tarjeta Regalo, WIC, etc...",
+        "description": "Description of other payment options"
+    },
+    
+    "pageInvalidPaymentTitle": {
+        "message": "Pago",
+        "description": "Title for the invalid payment page"
+    },
+    "pageInvalidPaymentInstructions": {
+        "message": "<p>Lo sentimos, este dispositivo est&aacute; configurado actualmente s&oacute;lo a aceptar la tarjeta de cr&eacute;dito o d&eacute;bito como formas de pago. Pedimos disculpas por las molestias.</p><p>Por favor, seleccione \"Volver a Tipos de Pago\" para elegir un tipo de pago v&aacutelida, o esperar a un asistente para completar su transacci&oacute;n.</p>",
+        "description": "Detailed message indicating that the selected payment method is invalid, and to return to the payment options page"
+    },
+    
+    "pagePaymentTitle": {
+        "message": "Pago",
+        "description": "Title of the payment page"
+    },
+    "pagePaymentInstructions": {
+        "message": "Use el teclado de PIN para completar la transacci&oacute;n",
+        "description": "Instruct the user to use the PIN pad to complete their transaction"
+    },
+    
+    "pageCompleteThanks": {
+        "message": "Gracias por comprar con nosotros!",
+        "description": "Thank the user for shopping at the store"
+    },
+    "pageCompleteBags": {
+        "message": "Por favor, retire las bolsas de la zona de embolsado y lleve su recibo.",
+        "description": "Instruct the user to remove their bags and take their receipt"
+    },
+    
+    "overlayCancel": {
+        "message": "Cancelar",
+        "description": "Cancel button"
+    },
+    "overlayContinue": {
+        "message": "Continuar",
+        "description": "Continue button"
+    },
+    
+    "overlayLargeItem": {
+        "message": "Por favor, espera y un acompa&ntilde;ante estar&aacute; con usted en breve para escanear su &iacute;tem grande.",
+        "description": "Instruct the user to wait for an attendant to scan their large item"
+    },
+    "overlaySku": {
+        "message": "Utilice el teclado en pantalla para introducir SKU de un producto, a continuación, seleccione \"Continuar\" para añadirlo a sus &iacute;tems.",
+        "description": "Instruct the user to use the on screen keyboard to type in an SKU"
+    },
+    "overlayCallAttendant": {
+        "message": "Un asistente se ha notificado y estar&aacute; con usted en breve. Seleccione \"Continuar\" reanudar el registro de salida.",
+        "description": "Instruct the user that an attendant will assist them momentarily"        
     }
-    
-    
 }

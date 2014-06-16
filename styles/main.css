@@ -402,6 +402,17 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
 }
 */
 
+/*page-startup*/
+#page-startup .content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#page-startup .content .start {    
+    font-size: 4em;
+    padding: 1em;
+}
 
 /*page-initial*/
 #page-initial .page-container>footer
@@ -669,6 +680,9 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
 {
     display: flex;
     flex-direction: column;   
+}
+#page-lookup footer {
+    border-top: none;
 }
 #page-lookup .search-results
 {

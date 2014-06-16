@@ -11,6 +11,7 @@
     };
     var GRAMS_TO_OUNCES = 0.035274;
     
+    var hasPermission = false;
     var connection;
     
     scale.getWeightOunces = function(callback) {
@@ -118,50 +119,47 @@
     var initialize = function() {
         chrome.hid.getDevices(DEVICE_INFO, function(devices) {
             if (devices) {
+                hasPermission = true;
                 if (devices.length > 0) {
                     chrome.hid.connect(devices[0].deviceId, function(hidConnectInfo) {
                         if (hidConnectInfo) {
                             connection = hidConnectInfo;
                         }
                         else {
-                            console.log('could not connect to device');
-                            console.log(chrome.app.runtime.lastError);
+                            throw new Error('There was an error trying to connect to the scale device');
                         }
                     });
                 }
                 else {
-                    console.log('device not connected');
-                    console.log(chrome.app.runtime.lastError);
+                    throw new Error('Scale device is not connected');
                 }
             }
             else {
-                console.log('app not given permission');
-                console.log(chrome.app.runtime.lastError);
+                hasPermission = false;
+                window.addEventListener('click', requestPermission);
             }
         });
     };
     
-    //TODO: Device requires one-time authorization for USB device
-    /*window.addEventListener('click', function() {
-        chrome.permissions.request({
-            'permissions': [
-                {
-                    'usbDevices': [
-                        {
-                            'vendorId': VENDOR_ID,
-                            'productId': PRODUCT_ID
-                        }
-                    ]
+    var requestPermission = function(e) {
+        if (!hasPermission) {
+            chrome.permissions.request({
+                'permissions': [
+                    {
+                        'usbDevices': [DEVICE_INFO]
+                    }
+                ]
+            }, function(result) {
+                if (result) {
+                    initialize();
+                    window.removeEventListener('click', requestPermission);
                 }
-            ]
-        }, function(result) {
-            if (result) {
-                initialize();
-            }
-            else {
-                throw new Error('App was not granted permission to the scale device, check your manifest.json permissions');
-            }
-        }); 
-    });*/
+                else {
+                    throw new Error('App was not granted permission to the scale device, check your manifest.json permissions');
+                }
+            });
+        }
+    };
+    
     window.addEventListener('load', initialize);    
 })(window);

@@ -9,11 +9,9 @@ $(document).ready(Init);
 //Process
 function Init()
 {
-    InitializeLocales();
-    var initialPage = '#page-initial';
     data.initialize();
     AddListeners();
-    ReturnMainMenu_ClickHandler();
+    OpenPage('#page-startup', PAGE_OUT_POSITION.BOTTOM);
     $(".helper-images > div:gt(0)").hide();
 //    setInterval(function() { 
 //      $('.helper-images > div:first')
@@ -42,6 +40,8 @@ function AddListeners()
 {
     $(document).bind('keypress', Scanner_Listener);
     swiper.addTrigger('.page-current');
+    
+    $('#page-startup .content').click(ReturnMainMenu_ClickHandler);
     
     $('#page-initial .start-button.english').click(Initial_StartEnglish_ClickHandler);
     $('#page-initial .start-button.spanish').click(Initial_StartSpanish_ClickHandler);
@@ -190,12 +190,8 @@ function Checkout_PayNow_ClickHandler(e)
 }
 function TypeInSKU_AfterOpenHandler(e) 
 {
-    $('#sku-query').focus();
-    var click = document.createEvent('Events');
-    click.initEvent('click', true, false);
-    $('#sku-query').get(0).dispatchEvent(click);
-    //TODO: See if focus+click vs click works
-    //TODO: This still doesn't work in forcing the chrome on screen keyboard up
+    //Focus/Click events on input do not bring up the onscreen keyboard
+    //Instead, we are adding a placeholder "Touch to Type" message
 }
 function Lookup_BeforeOpenHandler(e)
 {
@@ -203,9 +199,8 @@ function Lookup_BeforeOpenHandler(e)
 }
 function Lookup_AfterOpenHandler(e)
 {
-    $('#page-lookup #item-search-query').focus();
-    $('#page-lookup #item-search-query').click();
-    //TODO: This still doesn't work in forcing the chrome on screen keyboard up
+    //Focus/Click events on input do not bring up the onscreen keyboard
+    //Instead, we are adding a placeholder "Touch to Type" message
 }
 function Lookup_BeforeSearchHandler(e)
 {
@@ -343,32 +338,6 @@ function CallAttendent_Continue_ClickHandler(e)
 }
 
 //Actions
-function SetLanguage(json)
-{
-    $('.store-name').html(json.storeName.message);
-    $('.start-button.english').html(json.startButtonEnglish.message);
-    $('.start-button.spanish').html(json.startButtonSpanish.message);
-    $('.call-attendant .title').html(json.callAttendent.message);
-    $('.return-main-menu .title').html(json.returnMainMenu.message);
-    $('.return-checkout .title').html(json.returnCheckout.message);
-    
-    $('#page-checkout .page-title').html(json.pageCheckoutTitle.message);
-    $('.receipt-container header').html(json.pageCheckoutReceiptHeader.message);
-    $('.receipt-subtotal .title').html(json.pageCheckoutSubtotalTitle.message);
-    $('.receipt-tax .title').html(json.pageCheckoutTaxTitle.message);
-    $('.receipt-total .title').html(json.pageCheckoutTotalTitle.message);
-    
-    $('#lookup-item .title').html(json.lookupItemTitle.message);
-    $('#lookup-item .description').html(json.lookupItemDescription.message);
-    $('#large-item .title').html(json.largeItemTitle.message);
-    $('#large-item .description').html(json.largeItemDescription.message);
-    $('#type-in-sku .title').html(json.typeInSkuTitle.message);
-    $('#type-in-sku .description').html(json.typeInSkuDescription.message);
-    $('#pay-now').html(json.payNow.message);
-    
-    //TODO: Continue at #page-lookup
-}
-
 function ShowError(message) {
     $('#overlay-error .error').html(message);
     OpenOverlay('overlay-error', $('.page-current'));
