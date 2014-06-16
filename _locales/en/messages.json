@@ -183,5 +183,13 @@
     "overlayCallAttendant": {
         "message": "An attendant has been notified and will be with you shortly. Select \"Continue\" to resume checking out.",
         "description": "Instruct the user that an attendant will assist them momentarily"        
+    },
+    "overlayScale": {
+        "message": "Please place your item on the scale.",
+        "description": "Instruct the user to place their item on the scale"
+    },
+    "overlayScaleWait": {
+        "message": "Please wait one moment...",
+        "description": "Instruct the user to wait for the scale to finish weighing"
     }
 }

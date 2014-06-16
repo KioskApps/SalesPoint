@@ -322,6 +322,13 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
 {
     margin:2em 0;
 }
+#overlay-scale .wait {
+    position: relative;
+}
+#overlay-scale .loading-animation {
+    left: 100%;
+    margin-top: 0.5em;
+}
 
 .overlay-foreground-animation-in
 {
@@ -963,7 +970,7 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
 .loading-animation  
 {
     text-align: center;
-    width:80px;
+    width:100px;
     height:50px;
     position: absolute;
     top: calc(50% - 40px);
@@ -982,6 +989,9 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
     -webkit-animation: loading-animation  1.1s infinite alternate;
     border-radius: 50px;
     animation: loading-animation 1.1s infinite alternate;
+}
+.loading-animation.white span {
+    background: #fff;
 }
 
 #bubble_1 

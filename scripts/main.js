@@ -87,6 +87,10 @@ function AddListeners()
     $('#overlay-type-in-sku .cancel').click(TypeInSKU_Cancel_ClickHandler);
     $('#overlay-type-in-sku .continue').click(TypeInSKU_Continue_ClickHandler);
     $('#overlay-call-attendant .continue').click(CallAttendent_Continue_ClickHandler);
+    
+    $('#overlay-scale .cancel').click(Scale_Cancel_ClickHandler);
+    scale.addEventListener(scale.Event.ADDED, Scale_ItemAdded);
+    scale.addEventListener(scale.Event.REMOVED, Scale_ItemRemoved);
 }
 
 //Event Handlers
@@ -98,7 +102,6 @@ scanner.delay = 250;
 
 var scale = {};
 scale.active = false;
-scale.buffer = [];
 
 function Scanner_Listener(e) 
 {
@@ -125,13 +128,6 @@ function Scanner_Listener(e)
         else {
             scanner.buffer.push(String.fromCharCode(e.keyCode));
         }
-    }
-}
-function Scale_Listener(e) 
-{
-    if (scale.active)
-    {
-        
     }
 }
 function Initial_StartEnglish_ClickHandler(e)
@@ -337,6 +333,19 @@ function CallAttendent_Continue_ClickHandler(e)
 {
     CloseOverlay($('#overlay-call-attendant'), $('.page-current'));
 }
+function Scale_Cancel_ClickHandler(e)
+{
+    scale.active = false;
+    CloseOverlay($('#overlay-scale'), $('#page-checkout'));
+}
+function Scale_ItemAdded() {
+    $('#overlay-scale .message').hide();
+    $('#overlay-scale .wait').show();
+}
+function Scale_ItemRemoved() {
+    $('#overlay-scale .wait').hide();  
+    $('#overlay-scale .message').show();
+}
 
 //Actions
 function ShowError(message) {
@@ -413,20 +422,32 @@ function AddItemToReceipt(sku)
     }
     
     if (product.weightPrice > 0) {
+        scale.active = true;
         setTimeout(function() {
             //Allow for CSS transitions
+            Scale_ItemRemoved();
+            scanner.scanning = false;
             OpenOverlay('overlay-scale', $('#page-checkout'));
         }, 1000);
         
         var attempts = 0;
         var getWeight = function() {
+            console.log('scale: ' + scale.active);
+            if (!scale.active) {
+                return;
+            }
             scale.getWeightOunces(function(weight) {
+                console.log('got weight: ' + weight.amount);
                 if (weight && weight.amount > 0) {
                     var receiptItem = new ReceiptItem(product);
                     receiptItem.weight = weight.amount;
 
                     CloseOverlay($('#overlay-scale'), $('#page-checkout'));
-                    AddItemToReceipt(receiptItem);
+                    scanner.scanning = true;
+                    if (scale.active) {
+                        AddItemToReceipt(receiptItem);
+                        scale.active = false;
+                    }
                 }
                 else {
                     attempts++;
@@ -434,6 +455,8 @@ function AddItemToReceipt(sku)
                         setTimeout(getWeight, 1000);
                     }
                     else {
+                        scale.active = false;
+                        scanner.scanning = true;
                         CloseOverlay($('#overlay-scale'), $('#page-checkout'));
                         //Allow for CSS transitions
                         setTimeout(function() {

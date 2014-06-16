@@ -1,7 +1,12 @@
-(function(window) {
+(function(window, Math) {
     //Scale Scope
     var scale = {};
     window.scale = scale;
+    
+    scale.Event = {
+        'ADDED': 'item-added',
+        'REMOVED': 'item-removed'
+    };
     
     scale.accuracyDelay = 500;
     scale.accuracyConsecutive = 3;
@@ -13,9 +18,29 @@
     };
     var GRAMS_TO_OUNCES = 0.035274;
     
+    var listeners = {};
     var hasPermission = false;
     var connection;
     var weightAttempts = {};
+    
+    scale.addEventListener = function(type, listener) {
+        if (typeof listener === 'function') {
+            listeners[listener] = {
+                'type': type,
+                'listener': listener
+            };
+        }
+    };
+    scale.removeEventListener = function(type, listener) {
+        var removeAll = typeof listener === 'undefined';
+        for (var key in listeners) {
+            if (listeners[key].type === type) {
+                if (removeAll || listeners[key].listener === listener) {
+                    delete listeners[key];
+                }
+            }
+        }
+    };
     
     scale.getWeightOunces = function(callback) {
         getStableWeight(function(weight) {
@@ -50,6 +75,21 @@
                 if (attempt.attempt < scale.accuracyAttemptLimit) {
                     if (weight.valid) {
                         if (weight.stable) {
+                            if (attempt.lastWeight === 0 && weight.amount > 0) {
+                                for (var key in listeners) {
+                                    if (listeners[key].type === scale.Event.ADDED) {
+                                        listeners[key].listener();
+                                    }
+                                }
+                            }
+                            if (attempt.lastWeight > 0 && weight.amount === 0) {
+                                for (var key in listeners) {
+                                    if (listeners[key].type === scale.Event.REMOVED) {
+                                        listeners[key].listener();
+                                    }
+                                }
+                            }
+                            
                             if (weight.amount === attempt.lastWeight) {
                                 attempt.consecutive = attempt.consecutive + 1;
                             }
@@ -196,4 +236,4 @@
     };
     
     window.addEventListener('load', initialize);    
-})(window);
+})(window, Math);

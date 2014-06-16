@@ -53,4 +53,6 @@ function SetLanguage(json) {
     $('#overlay-large-item .message').html(json.overlayLargeItem.message);
     $('#overlay-type-in-sku .message').html(json.overlaySku.message);
     $('#overlay-call-attendant .message').html(json.overlayCallAttendant.message);
+    $('#overlay-scale .message').html(json.overlayScale.message);
+    $('#overlay-scale .wait p').html(json.overlayScaleWait.message);
 }

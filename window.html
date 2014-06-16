@@ -365,6 +365,18 @@
                     <img class="foreground-image" src="images/large-item.png" width="200" height="200" />
                     <div class="foreground-form">
                         <p class="message">Please place your item on the scale.</p>
+                        <div class="wait hidden"> 
+                            <p>Please wait one moment...</p>
+                            <div class="loading-animation white">
+                                <span id="bubble_1"></span>
+                                <span id="bubble_2"></span>
+                                <span id="bubble_3"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="actions">
+                            <button class="cancel">Cancel</button>
+                        </div>
                     </div>
                 </div>
                 <div id="overlay-error" class="foreground-content">

@@ -183,5 +183,13 @@
     "overlayCallAttendant": {
         "message": "Un asistente se ha notificado y estar&aacute; con usted en breve. Seleccione \"Continuar\" reanudar el registro de salida.",
         "description": "Instruct the user that an attendant will assist them momentarily"        
+    },
+    "overlayScale": {
+        "message": "Ponga por favor su art&iacute;culo en la escala.",
+        "description": "Instruct the user to place their item on the scale"
+    },
+    "overlayScaleWait": {
+        "message": "Por favor, espere un momento...",
+        "description": "Instruct the user to wait for the scale to finish weighing"
     }
 }
