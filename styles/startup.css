@@ -1,0 +1,66 @@
+/*page-startup*/
+#page-startup .content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#page-startup .start {
+    background-color: #96C651;
+    border: none;
+    color: #fff;
+    font-size: 3em;
+    margin: .5em;
+    outline:none;
+    padding: 1em;
+}
+#page-startup .start:active {
+    -webkit-transform: scale(0.95);
+    -webkit-transition-duration: 0.2s;
+}
+.test {
+    font-size: 2em;
+    padding: 1em;
+}
+.test header {
+    font-weight: bold;
+}
+
+.test > div {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25em;
+}
+.test .status {
+    border: 5px solid black;
+    border-radius: 50%;
+    height: 50px;
+    line-height: 50px;
+    position: relative;
+    width: 50px;
+}
+
+.test .status:after {
+    content: "?";
+    height: 50px;
+    left: -5px;
+    position: absolute;
+    text-align: center;
+    top: -5px;
+    width: 50px;
+}
+.test .success {
+    border-color: green;
+    color: green;    
+}
+.test .success:after {
+    content: "\2714";
+}
+.test .fail {
+    border-color: red;
+    color: red;
+}
+.test .fail:after {
+    content: "\2718";
+}

@@ -12,6 +12,7 @@ function Init()
     data.initialize();
     AddListeners();
     OpenPage('#page-startup', PAGE_OUT_POSITION.BOTTOM);
+    startup.startTesting();
     $(".helper-images > div:gt(0)").hide();
 //    setInterval(function() { 
 //      $('.helper-images > div:first')
@@ -38,20 +39,23 @@ function Reinit()
 
 function AddListeners()
 {
-    $(document).bind('keypress', Scanner_Listener);
+    scanner.addTrigger('.page-current');
     swiper.addTrigger('.page-current');
     
-    $('#page-startup .content').click(ReturnMainMenu_ClickHandler);
+    $('#page-startup .start').click(function() {
+        startup.stopTesting();
+        ReturnMainMenu_ClickHandler()
+    });
     
     $('#page-initial .start-button.english').click(Initial_StartEnglish_ClickHandler);
     $('#page-initial .start-button.spanish').click(Initial_StartSpanish_ClickHandler);
-    $('#page-initial').on('scanner', Initial_ScannerHandler);
+    $('#page-initial').on(scanner.EVENT, Initial_ScannerHandler);
     $('#page-initial').on('beforeopen', Initial_BeforeOpenHandler);
     $('#page-initial').on('afterclose', Initial_AfterCloseHandler);
     
     $('#page-checkout').on('beforeopen', Checkout_BeforeOpenHandler);
     $('#page-checkout').on('afterclose', Checkout_AfterCloseHandler);
-    $('#page-checkout').on('scanner', Checkout_ScannerHandler);
+    $('#page-checkout').on(scanner.EVENT, Checkout_ScannerHandler);
     $('#page-checkout #lookup-item').click(Checkout_LookupItem_ClickHandler);
     $('#page-checkout #large-item').click(Checkout_LargeItem_ClickHandler);
     $('#page-checkout #type-in-sku').click(Checkout_TypeInSKU_ClickHandler);
@@ -82,7 +86,7 @@ function AddListeners()
     
     $('#overlay-error .continue').click(Error_Continue_ClickHandler);
     $('#overlay-large-item').click(LargeItem_Cancel_ClickHandler);
-    $('#overlay-large-item').on('scanner', LargeItem_Cancel_ClickHandler);
+    $('#overlay-large-item').on(scanner.EVENT, LargeItem_Cancel_ClickHandler);
     $('#overlay-large-item .cancel').click(LargeItem_Cancel_ClickHandler);
     $('#overlay-type-in-sku .cancel').click(TypeInSKU_Cancel_ClickHandler);
     $('#overlay-type-in-sku .continue').click(TypeInSKU_Continue_ClickHandler);
@@ -94,42 +98,9 @@ function AddListeners()
 }
 
 //Event Handlers
-var scanner = {};
-scanner.scanning = true;
-scanner.scanStart = 0;
-scanner.buffer = [];
-scanner.delay = 250;
-
 var scale = {};
 scale.active = false;
 
-function Scanner_Listener(e) 
-{
-    if (scanner.scanning) {
-        e.preventDefault();
-        
-        if (scanner.scanStart === 0) {
-            scanner.scanStart = Date.now();
-        }
-        if ((Date.now() - scanner.scanStart) > scanner.delay) {
-            //If too much time has passed since the start, reset
-            scanner.scanStart = 0;
-            scanner.scanEnd = 0;
-            scanner.buffer = [];
-        }
-        
-        if (e.keyCode === 13) {
-            if ((Date.now() - scanner.scanStart) < scanner.delay) {
-                $('.page-current').trigger('scanner', scanner.buffer.join(''));
-            }
-            scanner.scanStart = 0;
-            scanner.buffer = [];
-        }
-        else {
-            scanner.buffer.push(String.fromCharCode(e.keyCode));
-        }
-    }
-}
 function Initial_StartEnglish_ClickHandler(e)
 { 
     $.getJSON('_locales/en/messages.json', SetLanguage);
@@ -423,10 +394,10 @@ function AddItemToReceipt(sku)
     
     if (product.weightPrice > 0) {
         scale.active = true;
+        scanner.scanning = false;
+        Scale_ItemRemoved();
         setTimeout(function() {
             //Allow for CSS transitions
-            Scale_ItemRemoved();
-            scanner.scanning = false;
             OpenOverlay('overlay-scale', $('#page-checkout'));
         }, 1000);
         

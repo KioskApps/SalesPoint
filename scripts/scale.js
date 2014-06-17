@@ -11,6 +11,8 @@
     scale.accuracyDelay = 500;
     scale.accuracyConsecutive = 3;
     scale.accuracyAttemptLimit = 20;
+    scale.hasPermission = false;
+    scale.isConnected = false;
     
     var DEVICE_INFO = {
         'vendorId': 2338, //0x0922
@@ -19,7 +21,6 @@
     var GRAMS_TO_OUNCES = 0.035274;
     
     var listeners = {};
-    var hasPermission = false;
     var connection;
     var weightAttempts = {};
     
@@ -72,7 +73,7 @@
         
         setTimeout(function() {
             read(function(weight) {
-                if (attempt.attempt < scale.accuracyAttemptLimit) {
+                if (attempt.attempt < scale.accuracyAttemptLimit && weight) {
                     if (weight.valid) {
                         if (weight.stable) {
                             if (attempt.lastWeight === 0 && weight.amount > 0) {
@@ -188,16 +189,20 @@
                 }
             });
         }
+        else if (typeof callback === 'function') {
+            callback();
+        }
     };
     
-    var initialize = function() {
+    scale.initialize = function() {
         chrome.hid.getDevices(DEVICE_INFO, function(devices) {
             if (devices) {
-                hasPermission = true;
+                scale.hasPermission = true;
                 if (devices.length > 0) {
                     chrome.hid.connect(devices[0].deviceId, function(hidConnectInfo) {
                         if (hidConnectInfo) {
                             connection = hidConnectInfo;
+                            scale.isConnected = true;
                         }
                         else {
                             throw new Error('There was an error trying to connect to the scale device');
@@ -209,14 +214,14 @@
                 }
             }
             else {
-                hasPermission = false;
-                window.addEventListener('click', requestPermission);
+                scale.hasPermission = false;
+                window.addEventListener('click', scale.requestPermission);
             }
         });
     };
     
-    var requestPermission = function(e) {
-        if (!hasPermission) {
+    scale.requestPermission = function(e) {
+        if (!scale.hasPermission) {
             chrome.permissions.request({
                 'permissions': [
                     {
@@ -225,8 +230,8 @@
                 ]
             }, function(result) {
                 if (result) {
-                    initialize();
-                    window.removeEventListener('click', requestPermission);
+                    scale.initialize();
+                    window.removeEventListener('click', scale.requestPermission);
                 }
                 else {
                     throw new Error('App was not granted permission to the scale device, check your manifest.json permissions');
@@ -235,5 +240,5 @@
         }
     };
     
-    window.addEventListener('load', initialize);    
+    window.addEventListener('load', scale.initialize);    
 })(window, Math);

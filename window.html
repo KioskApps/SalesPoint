@@ -2,16 +2,19 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="styles/main.css">
+        <link rel="stylesheet" type="text/css" href="styles/startup.css">
         
         <script src="scripts/lib/jquery-2.1.1.min.js"></script>
         <script src="scripts/lib/jquery.velocity.min.js"></script>
         <script src="scripts/lib/spreadsheet.js"></script>
         <script src="scripts/lib/sandbox.js"></script>
+        <script src="scripts/lib/scanner.js"></script>
         <script src="scripts/lib/swiper.js"></script>
         <script src="scripts/lib/stripe.js"></script>
         
         <script src="scripts/data.js"></script>
         <script src="scripts/main.js"></script>
+        <script src="scripts/startup.js"></script>
         <script src="scripts/locales.js"></script>
         <script src="scripts/scale.js"></script>
         
@@ -28,8 +31,40 @@
                 <div class="page-container">
                     <header>SalesPoint</header>
                     <div class="content">
-                        <img class="icon" src="images/icon_128.png" alt=""/>
-                        <div class="start">Touch to Start</div>
+                        <!--<img class="icon" src="images/icon_128.png" alt=""/>-->
+                        <div class="test">
+                            <header>Hardware Tests (Optional)</header>
+                            <p>Test each of the following hardware devices to ensure proper usage</p>
+                            <div class="barcode">
+                                <span class="title"><strong>Barcode Reader</strong> (Scan an Item)</span>
+                                <span class="status"></span>
+                            </div>
+                            <div class="swiper">
+                                <span class="title"><strong>Card Reader</strong> (Swipe a Card)</span>
+                                <span class="status"></span>                                
+                            </div>
+                            <div class="scaleconnect">
+                                <span class="title"><strong>Scale Connected</strong></span>
+                                <span class="status"></span>                                
+                            </div>
+                            <div class="scalepermission">
+                                <span class="title"><strong>Scale Permission</strong> (Tap the Screen)</span>
+                                <span class="status"></span>                                
+                            </div>
+                            <div class="scaleadd">
+                                <span class="title"><strong>Scale Add Item</strong> (Place Item on Scale)</span>
+                                <span class="status"></span>                                
+                            </div>
+                            <div class="scaleweight">
+                                <span class="title"><strong>Scale Stable Weight</strong> (Wait for Weight)</span>
+                                <span class="status"></span>                                
+                            </div>
+                            <div class="scaleremove">
+                                <span class="title"><strong>Scale Remove Item</strong> (Remove Item from Scale)</span>
+                                <span class="status"></span>                                
+                            </div>
+                        </div>
+                        <button class="start">Touch to Start App</button>
                     </div>
                     <footer></footer>
                 </div>
