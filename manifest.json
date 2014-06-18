@@ -6,7 +6,7 @@
     },
     "manifest_version": 2,
     "name": "SalesPoint",
-    "version": "1.2.2",
+    "version": "1.2.3",
     
     "default_locale": "en",
     "description": "Point-of-Sale checkout kiosk app for Chrome",
