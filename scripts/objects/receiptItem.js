@@ -1,42 +1,57 @@
-function ReceiptItem(product)
-{
+/**
+ * A ReceiptItem object loosely wraps a Product object.
+ * <p>
+ * In addition to the Product object, a ReceiptItem can record a weight 
+ * for the Product. It also contains several helper functions to calculate 
+ * prices.
+ * @param {Product} product the Product to create this ReceiptItem from
+ * @returns {ReceiptItem}
+ */
+function ReceiptItem(product) {
+    //Protect this scope
     var self = this;
     
-    this.id = CurrentSession.receipt.recieptItems.length;
-    this.product = product;    
+    /**
+     * The Product this ReceiptItem wraps
+     * @type Product
+     */
+    this.product = product;
+    /**
+     * The weight of the Product
+     * @type Number
+     */
     this.weight = 0;
     
-    this.getTotalPrice = function()
-    {
+    /**
+     * Retrieves the price of the ReceiptItem, accounting for the current 
+     * weight and the Product's weight price, if any. 
+     * @returns {number} the price of the ReceiptItem
+     */
+    this.getPrice = function() {
         var total = 0;
-        if(self.product.unitPrice > 0.00)
-        {
+        if (self.product.unitPrice > 0.00)  {
             total = self.product.unitPrice;
         }
-        else if(self.product.weightPrice > 0.00)
-        {
+        else if (self.product.weightPrice > 0.00) {
             total = self.product.weightPrice * self.weight;
-        }
-        
+        }        
         return total;
     };
     
-    this.setWeight = function(weight)
-    {
-        self.weight = weight;
-    };
-    
-    this.getReceiptItem = function()
-    {
-        var receiptItem = $('<div class="receipt-item"></div>');
-        receiptItem.append('<span class="product-name">' + self.product.name + '</span>');
-        var productTotal = $('<span/>').addClass('product-total');
+    /**
+     * Creates and returns a receipt item jQuery div selector for this 
+     * ReceiptItem.
+     * @returns {jQuery} receipt item jQuery div selector
+     */
+    this.getReceiptItemDiv = function() {
+        var div = $('<div/>').addClass('receipt-item')
+                .append($('<span/>').addClass('product-name').html(self.product.name));
+        var total = $('<span/>').addClass('product-total');
         if (self.weight > 0) {
-            var weight = self.weight + '' + self.product.weightUnit + ' ';
-            productTotal.append($('<span/>').addClass('weight').html(weight));
+            total.append($('<span/>').addClass('weight').html(self.weight + '' + self.product.weightUnit + ' '));
         }
-        productTotal.append($('<span/>').addClass('total').html(FormatCurrency(self.getTotalPrice()), true));
-        receiptItem.append(productTotal);
-        return receiptItem;
+        total.append($('<span/>').addClass('total').html(FormatCurrency(self.getPrice())));
+        div.append(total);
+        return div;
     };
 }

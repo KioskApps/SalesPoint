@@ -23,28 +23,79 @@
     var scale = {};
     window.scale = scale;
     
+    /**
+     * Defines event types when an item is added to or removed from the scale.
+     */
     scale.Event = {
         'ADDED': 'item-added',
         'REMOVED': 'item-removed'
     };
     
+    /**
+     * How long to wait (ms) before sending another read request to get a 
+     * more accurate result.
+     */
     scale.accuracyDelay = 500;
+    /**
+     * How many consecutive weight amount reads before a weight is deemed 
+     * stable.
+     */
     scale.accuracyConsecutive = 3;
+    /**
+     * Number of limited attempts to try before returning an error that the 
+     * scale could not get an accurate weight reading.
+     */
     scale.accuracyAttemptLimit = 20;
+    /**
+     * Indicates whether or not the app has permission to access the scale.
+     */
     scale.hasPermission = false;
+    /**
+     * Indicates whether or not the scale is connected to the app.
+     */
     scale.isConnected = false;
+    /**
+     * Indicates whether or not there was an error while attempting to 
+     * connect the app to the scale.
+     */
+    scale.errorConnecting = false;
     
-    /* M25 Dymo Digital Scale */
+    /**
+     * M25 Dymo Digital Scale vendor/product ID
+     */
     var DEVICE_INFO = {
         'vendorId': 2338, //0x0922
         'productId': 32772 //0x8004
     };
+    /**
+     * Conversion from grams to ounces
+     */
     var GRAMS_TO_OUNCES = 0.035274;
     
+    /**
+     * Map of listener functions.
+     */
     var listeners = {};
+    /**
+     * The current HidConnectInfo connection to the scale. 
+     * @type HidConnectInfo
+     */
     var connection;
+    /**
+     * Map of recorded weight attempts to keep track of the accuracy 
+     * attempt limit for a read request.
+     */
     var weightAttempts = {};
     
+    /**
+     * Adds an event listener to the scale.
+     * <p>
+     * The type parameter may be "item-added" or "item-removed", as 
+     * defined in the scale.Event object.
+     * @param {string} type the type of event to listen to
+     * @param {function)} listener the listener to add
+     * @returns {undefined}
+     */
     scale.addEventListener = function(type, listener) {
         if (typeof listener === 'function') {
             listeners[listener] = {
@@ -53,6 +104,18 @@
             };
         }
     };
+    /**
+     * Removes an event listener from the scale.
+     * <p>
+     * If a listener is not provided, all listeners of the provided type 
+     * are removed.
+     * <p>
+     * The type parameter may be "item-added" or "item-removed", as 
+     * defined in the scale.Event object.
+     * @param {string} type the type of event to listen to
+     * @param {function} listener the listener to remove
+     * @returns {undefined}
+     */
     scale.removeEventListener = function(type, listener) {
         var removeAll = typeof listener === 'undefined';
         for (var key in listeners) {
@@ -64,6 +127,24 @@
         }
     };
     
+    /**
+     * Request a stable reading in ounces of the current scale's weight.
+     * <p>
+     * The returned object in the provided callback will have the following 
+     * properties:
+     * <ul>
+     * <li>grams (boolean set to false)</li>
+     * <li>ounces (boolean set to true)</li>
+     * <li>valid (boolean set to true)</li>
+     * <li>stable (boolean set to true)</li>
+     * <li>amount (number representing weight in ounces)</li>
+     * </ul>
+     * If there was a problem connecting to the scale, or the read request 
+     * timed out, the returned weight object will be undefined.
+     * @param {function(object)} callback callback to receive stable weight 
+     *      reading object
+     * @returns {undefined}
+     */
     scale.getWeightOunces = function(callback) {
         getStableWeight(function(weight) {
             if (weight && weight.grams) {
@@ -78,15 +159,25 @@
         });
     };
     
+    /**
+     * Requests a stable weight read from the scale.
+     * @param {function(object)} callback callback to receive stable weight 
+     *      reading object
+     * @param {string} attemptId the current attempt ID to keep track of and 
+     *      limit the number of attempts for one weight read request
+     * @returns {undefined}
+     */
     var getStableWeight = function(callback, attemptId) {
         if (typeof attemptId === 'undefined') {
+            //Set the attempt ID to use
             attemptId = 'ScaleRead' + Math.floor((Math.random() * 899) + 100);
         }
         if (typeof weightAttempts[attemptId] === 'undefined') {
+            //If no weight attempt object exists, create it
             weightAttempts[attemptId] = {
-                'attempt': 0,
-                'lastWeight': 0.0,
-                'consecutive': 0
+                'attempt': 0, //The number of attempts
+                'lastWeight': 0.0, //The last weight read
+                'consecutive': 0 //Number of consecutive same weight readings
             };
         }
         
@@ -97,6 +188,8 @@
                 if (attempt.attempt < scale.accuracyAttemptLimit && weight) {
                     if (weight.valid) {
                         if (weight.stable) {
+                            //Calculate and fire listeners if an item 
+                            //is added or removed
                             if (attempt.lastWeight === 0 && weight.amount > 0) {
                                 for (var key in listeners) {
                                     if (listeners[key].type === scale.Event.ADDED) {
@@ -112,6 +205,7 @@
                                 }
                             }
                             
+                            //Update number of consecutive weight amount reads
                             if (weight.amount === attempt.lastWeight) {
                                 attempt.consecutive = attempt.consecutive + 1;
                             }
@@ -120,6 +214,8 @@
                             }
                             attempt.lastWeight = weight.amount;
 
+                            //If there have been enough consecutive weight amount
+                            //reads, callback, otherwise try again
                             if (attempt.consecutive < scale.accuracyConsecutive) {
                                 getStableWeight(callback, attemptId);
                             }
@@ -144,9 +240,16 @@
         }, scale.accuracyDelay);
     };
     
+    /**
+     * Reads weight data from the scale.
+     * @param {function(object)} callback callback function that is given the 
+     *      weight object (or undefined) from the read request
+     * @returns {undefined}
+     */
     var read = function(callback) {
         if (connection) {
-            chrome.hid.receive(connection.connectionId, 255, function(buffer) {
+            //Read 6-byte data packet from HID scale
+            chrome.hid.receive(connection.connectionId, 6, function(buffer) {
                 if (!buffer) {
                     throw new Error('There was a problem reading from the device');
                 }
@@ -215,6 +318,10 @@
         }
     };
     
+    /**
+     * Initialize the scale connection.
+     * @returns {undefined}
+     */
     scale.initialize = function() {
         chrome.hid.getDevices(DEVICE_INFO, function(devices) {
             if (devices) {
@@ -226,22 +333,34 @@
                             scale.isConnected = true;
                         }
                         else {
+                            scale.errorConnecting = true;
                             throw new Error('There was an error trying to connect to the scale device');
                         }
                     });
                 }
                 else {
+                    scale.errorConnecting = true;
                     throw new Error('Scale device could not be found, check the OS HID drivers');
                 }
             }
             else {
+                //If the scale does not have permission, add a click listener
+                //to the main window. Next time a user clicks on something, 
+                //they will be prompted to add scale permission.
                 scale.hasPermission = false;
                 window.addEventListener('click', scale.requestPermission);
             }
         });
     };
     
-    scale.requestPermission = function(e) {
+    /**
+     * Requests permission to access the scale device.
+     * @returns {undefined}
+     */
+    scale.requestPermission = function() {
+        //Note that permission has to come from a "user gesture", which 
+        //is why this function is bound to the window "click" event instead 
+        //of on the "load" event
         if (!scale.hasPermission) {
             chrome.permissions.request({
                 'permissions': [
@@ -251,6 +370,7 @@
                 ]
             }, function(result) {
                 if (result) {
+                    //Now with permission, initialize the scale again
                     scale.initialize();
                     window.removeEventListener('click', scale.requestPermission);
                 }
