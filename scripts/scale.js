@@ -1,3 +1,23 @@
+/*
+ * chrome.hid API Notice
+ * 
+ * Currently (6/18/2014) the chrome.hid API is not working on ChromeOS. This is 
+ * because the ChromeOS only supports a limited number of USB HID devices, and 
+ * those are generally limited to keyboards and mice. 
+ * 
+ * The scale used in this library uses HID Point-of-Sale Scale specification. 
+ * Windows (not tested on Mac or Linux) natively has these drivers and running 
+ * the application in Windows will result in the scale working properly. 
+ * 
+ * Until support for more generic HID drivers is added to the ChromeOS, this 
+ * library using the chrome.hid API will not work, the device will never be 
+ * found.
+ * 
+ * Interestingly, the scale can still be communicated with using the 
+ * chrome.usb API on ChromeOS. However, this is low-level USB calls instead of 
+ * the higher-level HID implementation.
+ */
+
 (function(window, Math) {
     //Scale Scope
     var scale = {};
@@ -14,6 +34,7 @@
     scale.hasPermission = false;
     scale.isConnected = false;
     
+    /* M25 Dymo Digital Scale */
     var DEVICE_INFO = {
         'vendorId': 2338, //0x0922
         'productId': 32772 //0x8004
@@ -210,7 +231,7 @@
                     });
                 }
                 else {
-                    throw new Error('Scale device is not connected');
+                    throw new Error('Scale device could not be found, check the OS HID drivers');
                 }
             }
             else {
