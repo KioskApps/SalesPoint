@@ -1,0 +1,180 @@
+.flipper {
+    position: relative;
+    transform-style: preserve-3d; 
+}
+
+/* flipper pages */
+.flipper .page {
+    backface-visibility: hidden;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    transform: translate3d(0, 0, 0);
+    transform-origin: 50% 100%;
+    width: 100%;
+    visibility: hidden;
+}
+.flipper .page.current {
+    visibility: visible;
+}
+
+/* page animations */
+.flipper .page.out {
+    animation: out 0.7s ease both;
+        -webkit-animation: out 0.7s ease both;
+}
+.flipper .page.in {
+    animation: in 0.7s ease both;
+        -webkit-animation: in 0.7s ease both;
+}
+@keyframes out {
+    to {
+        opacity: 0;
+        transform: rotateX(90deg);
+            -webkit-transform: rotateX(90deg);
+    }
+}
+@-webkit-keyframes out {
+    to {
+        opacity: 0;
+        -webkit-transform: rotateX(90deg);
+    }
+}
+@keyframes in {
+    from {
+        transform: translateY(-100%); transform: translateY(-100%);
+            -webkit-transform: translateY(-100%); transform: translateY(-100%);
+    }
+}
+@-webkit-keyframes in {
+    from {
+        -webkit-transform: translateY(-100%);
+    }
+}
+
+/* flipper overlays */
+.overlay {
+    display: none;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+.overlay.open {
+    display: block;
+}
+.overlay .background {
+    background-color: #fff;
+    height: 100%;
+    opacity: 0.7;
+    position: absolute;
+    width: 100%;
+}
+.overlay .foreground {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+}
+.overlay .foreground .foreground-container {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    padding: 2em;
+}
+
+/* overlay animations */
+.overlay .foreground-in {
+    animation: foreground-open 0.4s ease both;
+        -webkit-animation: foreground-open .4s ease both;
+}
+.overlay .foreground-out {
+    animation: foreground-close 0.7s ease both;
+        -webkit-animation: foreground-close 0.7s ease both;
+}
+.overlay .background-in {
+    animation: background-open 0.4s ease both;
+        -webkit-animation: background-open 0.4s ease both;
+}
+.overlay .background-out {
+    animation: background-close 0.7s ease both;
+        -webkit-animation: background-close 0.7s ease both;
+}
+@keyframes background-open {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.7;
+    }
+}
+@-webkit-keyframes background-open {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 0.7;
+    }
+}
+@keyframes background-close {
+    0% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@-webkit-keyframes background-close {
+    0% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+@keyframes foreground-open {
+    0% {
+        -webkit-transform: translateX(-100%);
+    }
+    100% {
+        -webkit-transform: translateX(0);
+    }
+}
+@-webkit-keyframes foreground-open {
+    0% {
+        -webkit-transform: translateX(-100%);
+    }
+    100% {
+        -webkit-transform: translateX(0);
+    }
+}
+@keyframes foreground-close {
+    0% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+    40% {
+        -webkit-transform: translateY(-5%);
+    }
+    100% {
+        opacity:0;
+        -webkit-transform: translateY(100%);
+    }
+}
+@-webkit-keyframes foreground-close {
+    0% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+    40% {
+        -webkit-transform: translateY(-5%);
+    }
+    100% {
+        opacity:0;
+        -webkit-transform: translateY(100%);
+    }
+}

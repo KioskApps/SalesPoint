@@ -1,6 +1,4 @@
 //Global Vars
-var PAGE_OUT_POSITION = {TOP:'top', BOTTOM:'bottom'};
-
 var CurrentSession;
 var SearchIntervalID;
 
@@ -11,17 +9,9 @@ function Init()
 {
     data.initialize();
     AddListeners();
-    OpenPage('#page-startup', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-startup');
     startup.startTesting();
     $(".helper-images > div:gt(0)").hide();
-//    setInterval(function() { 
-//      $('.helper-images > div:first')
-//        .fadeOut(3000)
-//        .next()
-//        .fadeIn(3000)
-//        .end()
-//        .appendTo('.helper-images');
-//    },  3000);
 }
 function Reinit()
 {
@@ -39,8 +29,8 @@ function Reinit()
 
 function AddListeners()
 {
-    scanner.addTrigger('.page-current');
-    swiper.addTrigger('.page-current');
+    scanner.addTrigger('.current');
+    swiper.addTrigger('.current');
     
     $('#page-startup .start').click(function() {
         startup.stopTesting();
@@ -50,20 +40,20 @@ function AddListeners()
     $('#page-initial .start-button.english').click(Initial_StartEnglish_ClickHandler);
     $('#page-initial .start-button.spanish').click(Initial_StartSpanish_ClickHandler);
     $('#page-initial').on(scanner.EVENT, Initial_ScannerHandler);
-    $('#page-initial').on('beforeopen', Initial_BeforeOpenHandler);
-    $('#page-initial').on('afterclose', Initial_AfterCloseHandler);
+    $('#page-initial').on(flipper.Event.BEFORE_OPEN, Initial_BeforeOpenHandler);
+    $('#page-initial').on(flipper.Event.AFTER_CLOSE, Initial_AfterCloseHandler);
     
-    $('#page-checkout').on('beforeopen', Checkout_BeforeOpenHandler);
-    $('#page-checkout').on('afterclose', Checkout_AfterCloseHandler);
+    $('#page-checkout').on(flipper.Event.BEFORE_OPEN, Checkout_BeforeOpenHandler);
+    $('#page-checkout').on(flipper.Event.AFTER_CLOSE, Checkout_AfterCloseHandler);
     $('#page-checkout').on(scanner.EVENT, Checkout_ScannerHandler);
     $('#page-checkout #lookup-item').click(Checkout_LookupItem_ClickHandler);
     $('#page-checkout #large-item').click(Checkout_LargeItem_ClickHandler);
     $('#page-checkout #type-in-sku').click(Checkout_TypeInSKU_ClickHandler);
     $('#page-checkout #pay-now').click(Checkout_PayNow_ClickHandler);
-    $('#overlay-type-in-sku').on('afteropen', TypeInSKU_AfterOpenHandler);
+    $('#overlay-type-in-sku').on(flipper.Event.AFTER_OPEN, TypeInSKU_AfterOpenHandler);
     
-    $('#page-lookup').on('beforeopen', Lookup_BeforeOpenHandler);
-    $('#page-lookup').on('afteropen', Lookup_AfterOpenHandler);
+    $('#page-lookup').on(flipper.Event.BEFORE_OPEN, Lookup_BeforeOpenHandler);
+    $('#page-lookup').on(flipper.Event.AFTER_OPEN, Lookup_AfterOpenHandler);
     $('#page-lookup').on('beforesearch', Lookup_BeforeSearchHandler);
     $('#page-lookup').on('aftersearch', Lookup_AfterSearchHandler);
     $('#page-lookup #item-search-query').keyup(Lookup_ItemSearchQuery_KeyUpHandler);
@@ -71,13 +61,13 @@ function AddListeners()
     $('#page-payment-options .payment-method.invalid').click(PaymentOptions_Cash_ClickHandler);
     $('#page-payment-options .payment-method.card').click(PaymentOptions_Card_ClickHandler);
     
-    $('#page-payment').on('beforeopen', Payment_BeforeOpenHandler);
-    $('#page-payment').on('afterclose', Payment_AfterCloseHandler);
+    $('#page-payment').on(flipper.Event.BEFORE_OPEN, Payment_BeforeOpenHandler);
+    $('#page-payment').on(flipper.Event.AFTER_CLOSE, Payment_AfterCloseHandler);
     $('#page-payment').on(swiper.EVENT, Payment_CardReaderHandler);
     
-    $('#page-complete').on('afteropen', Complete_AfterOpenHandler);
-    $('#page-complete').on('beforeopen', Complete_BeforeOpenHandler);
-    $('#page-complete').on('afterclose', Complete_AfterCloseHandler);
+    $('#page-complete').on(flipper.Event.AFTER_OPEN, Complete_AfterOpenHandler);
+    $('#page-complete').on(flipper.Event.BEFORE_OPEN, Complete_BeforeOpenHandler);
+    $('#page-complete').on(flipper.Event.AFTER_CLOSE, Complete_AfterCloseHandler);
     
     $('.return-checkout').click(ReturnCheckout_ClickHandler);
     $('.return-main-menu').unbind('click').click(ReturnMainMenu_ClickHandler);
@@ -104,12 +94,12 @@ scale.active = false;
 function Initial_StartEnglish_ClickHandler(e)
 { 
     $.getJSON('_locales/en/messages.json', SetLanguage);
-    OpenPage('#page-checkout', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-checkout');
 }
 function Initial_StartSpanish_ClickHandler(e)
 {
     $.getJSON('_locales/es/messages.json', SetLanguage);
-    OpenPage('#page-checkout', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-checkout');
 }
 function Initial_ScannerHandler(e, sku) 
 {
@@ -139,21 +129,21 @@ function Checkout_ScannerHandler(e, sku)
 }
 function Checkout_LookupItem_ClickHandler(e)
 {
-    OpenPage('#page-lookup', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-lookup');
 }
 function Checkout_LargeItem_ClickHandler(e)
 {
-    OpenOverlay('overlay-large-item', $('#page-checkout'));
+    flipper.openOverlay('#overlay-large-item');
 }
 function Checkout_TypeInSKU_ClickHandler(e)
 {
     scanner.scanning = false;
     $('#overlay-type-in-sku #sku-query').val('');
-    OpenOverlay('overlay-type-in-sku', $('#page-checkout'));
+    flipper.openOverlay('#overlay-type-in-sku');
 }
 function Checkout_PayNow_ClickHandler(e)
 {
-    OpenPage('#page-payment-options', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-payment-options');
 }
 function TypeInSKU_AfterOpenHandler(e) 
 {
@@ -207,7 +197,7 @@ function Lookup_SearchItem_ClickHandler(e)
 {
     var sku = $('.title .sku', $(this)).html();    
 
-    OpenPage('#page-checkout', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-checkout');
     $('#page-lookup #item-search-query').val('');
     
     AddItemToReceipt(sku);
@@ -220,15 +210,15 @@ function Lookup_ItemSearchQuery_KeyUpHandler(e)
 }
 function PaymentOptions_Card_ClickHandler(e)
 {
-    OpenPage('#page-payment', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-payment');
 }
 function PaymentOptions_Cash_ClickHandler(e)
 {
-    OpenPage('#page-invalid-payment-type', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-invalid-payment-type');
 }
 function InvalidPaymentType_ReturnPaymentMethods_ClickHandler(e)
 {
-    OpenPage('#page-payment-options', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-payment-options');
 }
 function Payment_BeforeOpenHandler(e) 
 {
@@ -243,7 +233,7 @@ function Payment_CardReaderHandler(e, card)
     var amount = FormatDecimalFromCurrency($('#page-payment .receipt-total .amount').html());
     stripe.chargeCard(card, amount, function(response) {
         if (response.success) {
-            OpenPage('#page-complete', PAGE_OUT_POSITION.BOTTOM);
+            flipper.openPage('#page-complete');
         }
         else {
             ShowError('There was a problem accepting your card: ' + response.message);
@@ -269,45 +259,45 @@ function Complete_AfterCloseHandler(e)
 function ReturnMainMenu_ClickHandler(e)
 {
     Reinit();
-    OpenPage('#page-initial', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-initial');
 }
 function ReturnCheckout_ClickHandler(e)
 {
-    OpenPage('#page-checkout', PAGE_OUT_POSITION.BOTTOM);
+    flipper.openPage('#page-checkout');
 }
 function CallAttendent_ClickHandler(e)
 {
-    OpenOverlay('overlay-call-attendant', $('.page-current'));
+    flipper.openOverlay('#overlay-call-attendant');
 }
 
 function Error_Continue_ClickHandler(e) 
 {
-     CloseOverlay($('#overlay-large-item'), $('.page-current'));
+     flipper.closeOverlay('#overlay-large-item');
 }
 function LargeItem_Cancel_ClickHandler(e)
 {
-    CloseOverlay($('#overlay-large-item'), $('#page-checkout'));
+    flipper.closeOverlay('#overlay-large-item');
 }
 function TypeInSKU_Cancel_ClickHandler(e)
 {
     scanner.scanning = true;
-    CloseOverlay($('#overlay-type-in-sku'), $('#page-checkout')); 
+    flipper.closeOverlay('#overlay-type-in-sku'); 
 }
 function TypeInSKU_Continue_ClickHandler(e)
 {
     scanner.scanning = true;
     var sku = $('#overlay-type-in-sku #sku-query').val();
-    CloseOverlay($('#overlay-type-in-sku'), $('#page-checkout')); 
+    flipper.closeOverlay('#overlay-type-in-sku');
     AddItemToReceipt(sku);
 }
 function CallAttendent_Continue_ClickHandler(e)
 {
-    CloseOverlay($('#overlay-call-attendant'), $('.page-current'));
+    flipper.closeOverlay('#overlay-call-attendant');
 }
 function Scale_Cancel_ClickHandler(e)
 {
     scale.active = false;
-    CloseOverlay($('#overlay-scale'), $('#page-checkout'));
+    flipper.closeOverlay('#overlay-scale');
 }
 function Scale_ItemAdded() {
     $('#overlay-scale .message').hide();
@@ -321,7 +311,7 @@ function Scale_ItemRemoved() {
 //Actions
 function ShowError(message) {
     $('#overlay-error .error').html(message);
-    OpenOverlay('overlay-error', $('.page-current'));
+    flipper.openOverlay('#overlay-error');
 }
 function ProductSearch(query)
 {
@@ -398,22 +388,20 @@ function AddItemToReceipt(sku)
         Scale_ItemRemoved();
         setTimeout(function() {
             //Allow for CSS transitions
-            OpenOverlay('overlay-scale', $('#page-checkout'));
+            flipper.openOverlay('#overlay-scale');
         }, 1000);
         
         var attempts = 0;
         var getWeight = function() {
-            console.log('scale: ' + scale.active);
             if (!scale.active) {
                 return;
             }
             scale.getWeightOunces(function(weight) {
-                console.log('got weight: ' + weight.amount);
                 if (weight && weight.amount > 0) {
                     var receiptItem = new ReceiptItem(product);
                     receiptItem.weight = weight.amount;
 
-                    CloseOverlay($('#overlay-scale'), $('#page-checkout'));
+                    flipper.closeOverlay('#overlay-scale');
                     scanner.scanning = true;
                     if (scale.active) {
                         AddItemToReceipt(receiptItem);
@@ -428,7 +416,7 @@ function AddItemToReceipt(sku)
                     else {
                         scale.active = false;
                         scanner.scanning = true;
-                        CloseOverlay($('#overlay-scale'), $('#page-checkout'));
+                        flipper.closeOverlay('#overlay-scale');
                         //Allow for CSS transitions
                         setTimeout(function() {
                             ShowError('An item was not placed on the scale');
@@ -471,67 +459,6 @@ function UpdateProgress_SearchTimer(interval)
         var searchQuery = $('#page-lookup #item-search-query').val();
         ProductSearch(searchQuery);
     }
-}
-
-function OpenPage(pageName, pageOutPosition)
-{
-    var targetPage = $(pageName);
-    if(targetPage.length > 0)
-    {
-        var animationSpeed = 700;
-        
-        var currentPage = $('.page-current');
-        targetPage.trigger('beforeopen');
-        
-        //close current page
-        $('.page-current').addClass('page-animate-out');
-        //after animation, remove erroneous classes
-        setTimeout(function()
-        {
-            currentPage.removeClass('page-current');
-            currentPage.removeClass('page-animate-out');
-            currentPage.trigger('afterclose');
-        }, animationSpeed);
-        
-        //open new page
-        targetPage.addClass('page-current');
-        targetPage.addClass('page-animate-in');
-        //after animation, remove erroneous classes
-        setTimeout(function()
-        {
-            targetPage.removeClass('page-animate-in');
-            targetPage.trigger('afteropen');
-        }, animationSpeed);
-    }
-}
-
-function OpenOverlay(overlayID, page)
-{
-    $('#' + overlayID).trigger('beforeopen');
-    $('.overlay', page).css('display', 'block');
-    $('#overlays #' + overlayID).detach().appendTo($('.overlay .foreground .foreground-container', page));
-    $('.overlay .foreground .foreground-container', page).addClass('overlay-foreground-animation-in');
-    $('.overlay .background', page).addClass('overlay-background-animation-in');
-    
-    setTimeout(function()
-    {        
-        $('.overlay .foreground .foreground-container', page).removeClass('overlay-foreground-animation-in');
-        $('.overlay .background', page).removeClass('overlay-background-animation-in');
-        $('#' + overlayID).trigger('afteropen');
-    }, 700);
-}
-function CloseOverlay(overlayElement, page)
-{
-    $('.overlay .foreground .foreground-container', page).addClass('overlay-foreground-animation-out');
-    $('.overlay .background', page).addClass('overlay-background-animation-out');
-    setTimeout(function()
-    {
-        $('.overlay', page).css('display', 'none');
-        overlayElement.detach().appendTo('#overlays');
-        
-        $('.overlay .foreground .foreground-container', page).removeClass('overlay-foreground-animation-out');
-        $('.overlay .background', page).removeClass('overlay-background-animation-out');
-    }, 700);   
 }
 
 //Helper Functions

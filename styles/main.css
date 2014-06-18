@@ -47,105 +47,14 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
     background: #7FA844;
 }
 
-/*page transitions*/
-#transition-wrapper
-{
-    position: relative;
-    width: 100%;
+/*flipper*/
+.flipper {
     height: 100%;
-    perspective: 1000px;
-    -webkit-perspective: 1000px;
-    transform-style: preserve-3d;
-}
- 
-.page 
-{
     width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    visibility: hidden;
-    overflow: hidden;
-    -webkit-backface-visibility: hidden;
-    -webkit-transform: translate3d(0, 0, 0);
-    -webkit-transform-origin: 50% 100%;
-    background-color:#fff;
-    color:#333;
-}
- 
-.page-current
-{
-    visibility: visible;
-}
- 
-.page-top
-{
-    z-index: 999;
-}
-
-.page-animate-out
-{
-    -webkit-animation: rotatePushBottom .7s ease both;
-}
-.page-animate-in
-{
-    -webkit-animation: moveFromTop .7s ease both;
-}
-
-/*animations*/
-@-webkit-keyframes rotatePushBottom {
-	from { }
-	to { opacity: 0; -webkit-transform: rotateX(90deg); }
-}
-@keyframes rotatePushBottom {
-	from { }
-	to { opacity: 0; -webkit-transform: rotateX(90deg); transform: rotateX(90deg); }
-}
-@-webkit-keyframes moveFromTop {
-	from { -webkit-transform: translateY(-100%); }
-}
-@keyframes moveFromTop {
-	from { -webkit-transform: translateY(-100%); transform: translateY(-100%); }
-}
-
-/*keyboard*/
-.keyboard
-{
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-    justify-content: center;    
-}
-.keyboard .keyrow
-{
-    display: flex;
-    align-content: center;
-    justify-content: center;    
-}
-.keyboard .key
-{
-    border: solid 2px #fff;
-    width: 50px;
-    height: 50px;
-    border-radius: .4em;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: .2em .3em;
-    flex:1;
-}
-.keyboard .key.space,
-.keyboard .key.back
-{
-    flex:2;
-}
-.keyboard .key:active
-{
-    -webkit-transition-duration: 0.2s;
-    -webkit-transform: scale(0.95);
-    background-color:#fff;
-    color:#96C651;
+} 
+.page {
+    background-color: #fff;
+    color: #333;
 }
 
 /*----------PAGES---------------*/
@@ -219,61 +128,28 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
 }
 
 /*page overlay*/
-.page .page-container .overlay
+.overlay .foreground .foreground-container
 {
-    position:absolute;
-    width:100%;
-    height:100%;
-    top:0;
-    left:0;
-    display:none;
-}
-.page .page-container .overlay .background
-{
-    background-color:#fff;
-    opacity:.7;
-    width:100%;
-    height:100%;
-    position: absolute;
-    width:100%;
-    height:100%;
-}
-.page .page-container .overlay .foreground
-{
-    display:flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    width:100%;
-    height:100%;
-}
-.page .page-container .overlay .foreground .foreground-container
-{
-    flex:1;
-    padding:2em;
-    display:flex;
-    align-items: center;
-    justify-content: center;
     background-color:#96C651;
     box-shadow: 5px 5px 10px #ddd;
 }
-.page .page-container .overlay .foreground .foreground-content
+.overlay .foreground .overlay-content
 {
     color:#fff;
     font-size:2em;
 }
-.page .page-container .overlay .foreground .foreground-content .foreground-form,
-.page .page-container .overlay .foreground .foreground-content .foreground-image
+.overlay .foreground .overlay-content .content,
+.overlay .foreground .overlay-content .image
 {
     display:inline-block;
     vertical-align: middle;
 }
-.page .page-container .overlay .foreground .foreground-content .foreground-form
+.overlay .foreground .overlay-content .content
 {
     margin-left:1em;
 }
 
-.page .page-container .overlay .foreground .foreground-content .foreground-form .actions button
+.overlay .foreground .overlay-content .content .actions button
 {
     background-color: transparent;
     border: solid 2px #fff;
@@ -284,7 +160,7 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
     margin-right: .5em;
     outline:none;
 }
-.page .page-container .overlay .foreground .foreground-content .foreground-form .actions button:active
+.overlay .foreground .overlay-content .content .actions button:active
 {
     -webkit-transition-duration: 0.2s;
     background-color: #fff;
@@ -329,86 +205,6 @@ button{font-family:'open_sanscondensed_light' sans-serif;}
     left: 100%;
     margin-top: 0.5em;
 }
-
-.overlay-foreground-animation-in
-{
-    -webkit-animation: foregroundOpen .4s ease both;
-}
-.overlay-foreground-animation-out
-{
-    -webkit-animation: foregroundClose .7s ease both;
-}
-
-.overlay-background-animation-in
-{
-    -webkit-animation: backgroundOpen .4s ease both;
-}
-
-.overlay-background-animation-out
-{
-    -webkit-animation: backgroundClose .7s ease both;
-}
-@-webkit-keyframes backgroundOpen {
-	0% { opacity:0;}
-	100% { opacity:.7;}
-}
-@keyframes backgroundOpen {
-	0% { opacity:0;}
-	100% { opacity:.7;}
-}
-@-webkit-keyframes backgroundClose {
-	0% { opacity:.7;}
-	100% { opacity:0;}
-}
-@keyframes backgroundClose {
-	0% { opacity:.7;}
-	100% { opacity:0;}
-}
-@-webkit-keyframes foregroundOpen {
-	0% { -webkit-transform: translateX(-100%);}
-	100% { -webkit-transform: translateX(0);}
-}
-@keyframes foregroundOpen {
-	0% { -webkit-transform: translateX(-100%);}
-	100% { -webkit-transform: translateX(0);}
-}
-@-webkit-keyframes foregroundClose {
-	0% { -webkit-transform: translateY(0);opacity:1;}
-	40% { -webkit-transform: translateY(-5%);}
-	100% { -webkit-transform: translateY(100%);opacity:0;}
-}
-@keyframes foregroundClose {
-	0% { -webkit-transform: translateY(0);opacity:1;}
-	40% { -webkit-transform: translateY(-5%);}
-	100% { -webkit-transform: translateY(100%);opacity:0;}
-}
-
-/*helper-images*/
-/*
-.helper-images { 
-    margin: 50px auto; 
-    position: relative; 
-    width: 240px; 
-    height: 240px; 
-    padding: 10px; 
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    width:100%;
-    
-}
-.helper-images > div { 
-    position: absolute; 
-    top: 10px; 
-    left: 10px; 
-    right: 10px; 
-    bottom: 10px;
-    width:100%;
-}
-.helper-images > div > img { 
-    max-width:100%;
-    max-height:100%;
-}
-*/
-
 
 /*page-initial*/
 #page-initial .page-container>footer

@@ -3,9 +3,11 @@
     <head>
         <link rel="stylesheet" type="text/css" href="styles/main.css">
         <link rel="stylesheet" type="text/css" href="styles/startup.css">
+        <link rel="stylesheet" type="text/css" href="styles/flipper.css">
         
         <script src="scripts/lib/jquery-2.1.1.min.js"></script>
         <script src="scripts/lib/jquery.velocity.min.js"></script>
+        <script src="scripts/lib/flipper.js"></script>
         <script src="scripts/lib/spreadsheet.js"></script>
         <script src="scripts/lib/sandbox.js"></script>
         <script src="scripts/lib/scanner.js"></script>
@@ -26,7 +28,7 @@
         
     </head>
     <body>
-        <div id="transition-wrapper">
+        <div id="flipper" class="flipper">
             <div class="page" id="page-startup">
                 <div class="page-container">
                     <header>SalesPoint</header>
@@ -154,12 +156,6 @@
                         <button class="call-attendant"><img src="images/call-attendant.png" width="25" height="25"/><span class="title">Call Attendent</span></button>
                         <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
                     </footer>
-                    <div class="overlay">
-                        <div class="background"></div>
-                        <div class="foreground">
-                            <div class="foreground-container"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="page" id="page-lookup">
@@ -182,12 +178,6 @@
                             <progress id="search-timer-progress" value="0" max="200"></progress>
                         </div>
                         <div class="search-results"></div>
-                    </div>
-                    <div class="overlay">
-                        <div class="background"></div>
-                        <div class="foreground">
-                            <div class="foreground-container"></div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -251,12 +241,6 @@
                         <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
                         <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
                     </footer>
-                    <div class="overlay">
-                        <div class="background"></div>
-                        <div class="foreground">
-                            <div class="foreground-container"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="page" id="page-invalid-payment-type">
@@ -278,12 +262,6 @@
                         <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
                         <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
                     </footer>
-                    <div class="overlay">
-                        <div class="background"></div>
-                        <div class="foreground">
-                            <div class="foreground-container"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="page" id="page-payment">
@@ -334,12 +312,6 @@
                         <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
                         <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
                     </footer>
-                    <div class="overlay">
-                        <div class="background"></div>
-                        <div class="foreground">
-                            <div class="foreground-container"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="page" id="page-complete">
@@ -363,20 +335,26 @@
             </div>
         </div>
 
+        <div id="overlay" class="overlay">
+            <div class="background"></div>
+            <div class="foreground">
+                <div class="foreground-container"></div>
+            </div>
+        </div>
         <div class="hidden">
             <div id="overlays">
-                <div id="overlay-large-item" class="foreground-content">
-                    <img class="foreground-image" src="images/large-item.png" width="200" height="200" />
-                    <div class="foreground-form">
+                <div id="overlay-large-item" class="overlay-content">
+                    <img class="image" src="images/large-item.png" width="200" height="200" />
+                    <div class="content">
                         <p class="message">Please wait and an attendant will be with you shortly to scan your large item.</p>
                         <div class="actions">
                             <button class="cancel">Cancel</button>
                         </div>
                     </div>
                 </div>
-                <div id="overlay-type-in-sku" class="foreground-content">
-                    <img class="foreground-image" src="images/enter-sku.png" width="200" height="200" />
-                    <div class="foreground-form">
+                <div id="overlay-type-in-sku" class="overlay-content">
+                    <img class="image" src="images/enter-sku.png" width="200" height="200" />
+                    <div class="content">
                         <p class="message">Use the on screen keyboard to enter a product's SKU, then select "Continue" to add it to your items.</p>
                         <div class="user-input">
                             <input id="sku-query" type="text" placeholder="Touch to Type"/>
@@ -387,18 +365,18 @@
                         </div>                        
                     </div>
                 </div>
-                <div id="overlay-call-attendant" class="foreground-content">
-                    <img class="foreground-image" src="images/call-attendant.png" width="200" height="200" />
-                    <div class="foreground-form">
+                <div id="overlay-call-attendant" class="overlay-content">
+                    <img class="image" src="images/call-attendant.png" width="200" height="200" />
+                    <div class="content">
                         <p class="message">An attendant has been notified and will be with you shortly. Select "Continue" to resume checking out.</p>
                         <div class="actions">
                             <button class="continue">Continue</button>
                         </div>
                     </div>
                 </div>
-                <div id="overlay-scale" class="foreground-content">
-                    <img class="foreground-image" src="images/large-item.png" width="200" height="200" />
-                    <div class="foreground-form">
+                <div id="overlay-scale" class="overlay-content">
+                    <img class="image" src="images/large-item.png" width="200" height="200" />
+                    <div class="content">
                         <p class="message">Please place your item on the scale.</p>
                         <div class="wait hidden"> 
                             <p>Please wait one moment...</p>
@@ -414,9 +392,9 @@
                         </div>
                     </div>
                 </div>
-                <div id="overlay-error" class="foreground-content">
-                    <img class="foreground-image" src="images/cancel.png" width="200" height="200" />
-                    <div class="foreground-form">
+                <div id="overlay-error" class="overlay-content">
+                    <img class="image" src="images/cancel.png" width="200" height="200" />
+                    <div class="content">
                         <p class="error"></p>
                         <div class="actions">
                             <button class="continue">Continue</button>
