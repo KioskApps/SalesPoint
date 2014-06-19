@@ -12,10 +12,22 @@ $(document).ready(Init);
 function Init()
 {
     data.initialize();
+    InitStillThere();
     AddListeners();
     flipper.openPage('#page-startup');
     startup.startTesting();
     $(".helper-images > div:gt(0)").hide();
+}
+function InitStillThere() {    
+    stillthere.timeoutStillThere = 120000; //2 minutes
+    stillthere.timeout = 150000; //2.5 minutes
+    stillthere.addEventListener(stillthere.Event.STILL_THERE, function() {
+        stillthere.overlay.find('.message').html('Are you still there?');
+    });
+    stillthere.addEventListener(stillthere.Event.TIMEOUT, function() {
+        stillthere.overlay.find('.message').html('Touch to Begin');
+        ReturnMainMenu_ClickHandler();
+    });
 }
 function Reinit()
 {
