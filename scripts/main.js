@@ -8,7 +8,7 @@ var main = {};
  * The current Session
  * @type Session
  */
-main.currentSession;
+main.session;
 /**
  * Indicates if the scale is currently active
  * @type Boolean
@@ -50,7 +50,10 @@ main.initialize = function() {
     scale.addEventListener(scale.Event.ADDED, main.scaleItemAdded);
     scale.addEventListener(scale.Event.REMOVED, main.scaleItemRemoved);
     
-    //Add Listeners
+    /*
+     * Add Listeners
+     */    
+    //Page-Startup
     $('#page-startup .start').click(function() {
         startup.stopTesting();
         main.start();
