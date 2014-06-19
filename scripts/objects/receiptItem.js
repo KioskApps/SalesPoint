@@ -50,7 +50,7 @@ function ReceiptItem(product) {
         if (self.weight > 0) {
             total.append($('<span/>').addClass('weight').html(self.weight + '' + self.product.weightUnit + ' '));
         }
-        total.append($('<span/>').addClass('total').html(FormatCurrency(self.getPrice())));
+        total.append($('<span/>').addClass('total').html(main.formatCurrency(self.getPrice())));
         div.append(total);
         return div;
     };

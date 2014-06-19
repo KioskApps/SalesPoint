@@ -1,24 +1,39 @@
+$(document).ready(function() {
+    main.initialize();
+});
+
 //Main Scope
 var main = {};
-main.session;
+/**
+ * The current Session
+ * @type Session
+ */
+main.currentSession;
+/**
+ * Indicates if the scale is currently active
+ * @type Boolean
+ */
+main.scaleActive = false;
+/**
+ * Used to cancel the lookup page search progress bar interval
+ * @type Number
+ */
+main.intervalId;
+/**
+ * Delay (ms) until returning to the main page after completing a transaction
+ * @type Number
+ */
+main.completeDelay = 3000;
 
-//Global Vars
-var SearchIntervalID;
-var scaleActive = false;
-
-$(document).ready(Init);
-
-//Process
-function Init()
-{
+/**
+ * Initialize the app
+ * @returns {undefined}
+ */
+main.initialize = function() {
+    //Load Data
     data.initialize();
-    InitStillThere();
-    AddListeners();
-    flipper.openPage('#page-startup');
-    startup.startTesting();
-    $(".helper-images > div:gt(0)").hide();
-}
-function InitStillThere() {    
+    
+    //Setup StillThere
     stillthere.timeoutStillThere = 120000; //2 minutes
     stillthere.timeout = 150000; //2.5 minutes
     stillthere.addEventListener(stillthere.Event.STILL_THERE, function() {
@@ -26,348 +41,221 @@ function InitStillThere() {
     });
     stillthere.addEventListener(stillthere.Event.TIMEOUT, function() {
         stillthere.overlay.find('.message').html('Touch to Begin');
-        ReturnMainMenu_ClickHandler();
+        main.start();
     });
-}
-function Reinit()
-{
+    
+    //Setup Scanner/Swiper/Scale
+    scanner.addTrigger('.current');
+    swiper.addTrigger('.current');
+    scale.addEventListener(scale.Event.ADDED, main.scaleItemAdded);
+    scale.addEventListener(scale.Event.REMOVED, main.scaleItemRemoved);
+    
+    //Add Listeners
+    $('#page-startup .start').click(function() {
+        startup.stopTesting();
+        main.start();
+    });
+    
+    //Page-Initial
+    $('#page-initial').on(flipper.Event.BEFORE_OPEN, function() {
+        document.getElementById('background-video').play();
+    });
+    $('#page-initial').on(flipper.Event.AFTER_CLOSE, function() {
+        document.getElementById('background-video').pause();
+    });
+    $('#page-initial').on(scanner.EVENT, main.startScanner);
+    $('#page-initial .start-button.english').click(main.startEnglish);
+    $('#page-initial .start-button.spanish').click(main.startSpanish);
+    
+    //Page-Checkout
+    $('#page-checkout').on(flipper.Event.BEFORE_OPEN, function() {
+        scanner.scanning = true;
+    });
+    $('#page-checkout').on(flipper.Event.AFTER_CLOSE, function() {
+        scanner.scanning = false;
+    });
+    $('#page-checkout').on(scanner.EVENT, main.checkoutScanner);
+    $('#page-checkout #lookup-item').click(function() {
+        flipper.openPage('#page-lookup');
+    });
+    $('#page-checkout #large-item').click(function() {
+        flipper.openOverlay('#overlay-large-item');
+    });
+    $('#page-checkout #type-in-sku').click(function() {
+        flipper.openOverlay('#overlay-type-in-sku');
+    });
+    $('#page-checkout #pay-now').click(function() {
+        flipper.openPage('#page-payment-options');
+    });
+    
+    //Page-Lookup
+    $('#page-lookup').on(flipper.Event.BEFORE_OPEN, function() {
+        $('#page-lookup #item-search-query').val('');
+        main.productSearch();
+    });
+    $('#page-lookup').on('beforesearch', main.lookupBeforeSearch);
+    $('#page-lookup').on('aftersearch', main.lookupAfterSearch);
+    $('#page-lookup #item-search-query').keyup(main.lookupStartProgress);
+    
+    //Page-Payment-Options
+    $('#page-payment-options .payment-method.invalid').click(function() {
+        flipper.openPage('#page-invalid-payment-type');
+    });
+    $('#page-payment-options .payment-method.card').click(function() {
+        flipper.openPage('#page-payment');
+    });
+    
+    //Page-Payment
+    $('#page-payment').on(flipper.Event.BEFORE_OPEN, function() {
+        swiper.scanning = true;
+    });
+    $('#page-payment').on(flipper.Event.AFTER_CLOSE, function() {
+        swiper.scanning = false;
+    });
+    $('#page-payment').on(swiper.EVENT, main.paymentSwiper);
+    
+    //Page-Complete
+    $('#page-complete').on(flipper.Event.BEFORE_OPEN, function() {
+        document.getElementById('complete-video').play();
+    });
+    $('#page-complete').on(flipper.Event.AFTER_OPEN, function() {
+        setTimeout(function() {
+            main.start();
+        }, main.completeDelay);
+    });
+    $('#page-complete').on(flipper.Event.AFTER_CLOSE, function() {
+        document.getElementById('complete-video').pause();
+    });
+    
+    //Buttons
+    $('.return-checkout').click(function() {
+        flipper.openPage('#page-checkout');
+    });
+    $('.call-attendant').click(function() {
+        flipper.openOverlay('#overlay-call-attendant');
+    });
+    $('.return-payment-methods').click(function() {
+        flipper.openPage('#page-payment-options');
+    });
+    $('.return-main-menu').click(main.start);
+    
+    //Overlay Close Buttons
+    $('#overlay-error .continue').click(main.closeOverlay);
+    $('#overlay-large-item').click(main.closeOverlay);
+    $('#overlay-large-item').on(scanner.EVENT, main.closeOverlay);
+    $('#overlay-large-item .cancel').click(main.closeOverlay);
+    $('#overlay-type-in-sku .cancel').click(main.closeOverlay);
+    $('#overlay-call-attendant .continue').click(main.closeOverlay);
+    
+    //SKU Overlay
+    $('#overlay-type-in-sku').on(flipper.Event.BEFORE_OPEN, function() {
+        scanner.scanning = false;
+        $('#overlay-type-in-sku #sku-query').val('');
+    });
+    $('#overlay-type-in-sku').on(flipper.Event.AFTER_CLOSE, function() {
+        scanner.scanning = true;
+    });    
+    $('#overlay-type-in-sku .continue').click(function() {
+        var sku = $('#overlay-type-in-sku #sku-query').val();
+        flipper.closeOverlay();
+        main.addItemToReceipt(sku);
+    });
+    
+    $('#overlay-scale .cancel').click(function() {
+        main.scaleActive = false;
+        flipper.closeOverlay('#overlay-scale');
+    });
+    
+    flipper.openPage('#page-startup');
+    startup.startTesting();
+};
+
+/**
+ * Starts the app and resets the current session.
+ * @returns {undefined}
+ */
+main.start = function() {
     main.session = new Session();
     scanner.scanning = true;
     swiper.scanning = false;
-    scaleActive = false;
+    main.scaleActive = false;
     
+    //Reset items
     $('.receipt').empty();
-    $('.total .amount').html('$0.00');
-    
+    $('.total .amount').html('$0.00');    
     $('#page-checkout #pay-now').removeClass('active');
-}
-
-function AddListeners()
-{
-    scanner.addTrigger('.current');
-    swiper.addTrigger('.current');
     
-    $('#page-startup .start').click(function() {
-        startup.stopTesting();
-        ReturnMainMenu_ClickHandler();
-    });
-    
-    $('#page-initial .start-button.english').click(Initial_StartEnglish_ClickHandler);
-    $('#page-initial .start-button.spanish').click(Initial_StartSpanish_ClickHandler);
-    $('#page-initial').on(scanner.EVENT, Initial_ScannerHandler);
-    $('#page-initial').on(flipper.Event.BEFORE_OPEN, Initial_BeforeOpenHandler);
-    $('#page-initial').on(flipper.Event.AFTER_CLOSE, Initial_AfterCloseHandler);
-    
-    $('#page-checkout').on(flipper.Event.BEFORE_OPEN, Checkout_BeforeOpenHandler);
-    $('#page-checkout').on(flipper.Event.AFTER_CLOSE, Checkout_AfterCloseHandler);
-    $('#page-checkout').on(scanner.EVENT, Checkout_ScannerHandler);
-    $('#page-checkout #lookup-item').click(Checkout_LookupItem_ClickHandler);
-    $('#page-checkout #large-item').click(Checkout_LargeItem_ClickHandler);
-    $('#page-checkout #type-in-sku').click(Checkout_TypeInSKU_ClickHandler);
-    $('#page-checkout #pay-now').click(Checkout_PayNow_ClickHandler);
-    
-    $('#page-lookup').on(flipper.Event.BEFORE_OPEN, Lookup_BeforeOpenHandler);
-    $('#page-lookup').on('beforesearch', Lookup_BeforeSearchHandler);
-    $('#page-lookup').on('aftersearch', Lookup_AfterSearchHandler);
-    $('#page-lookup #item-search-query').keyup(Lookup_ItemSearchQuery_KeyUpHandler);
-    
-    $('#page-payment-options .payment-method.invalid').click(PaymentOptions_Cash_ClickHandler);
-    $('#page-payment-options .payment-method.card').click(PaymentOptions_Card_ClickHandler);
-    
-    $('#page-payment').on(flipper.Event.BEFORE_OPEN, Payment_BeforeOpenHandler);
-    $('#page-payment').on(flipper.Event.AFTER_CLOSE, Payment_AfterCloseHandler);
-    $('#page-payment').on(swiper.EVENT, Payment_CardReaderHandler);
-    
-    $('#page-complete').on(flipper.Event.AFTER_OPEN, Complete_AfterOpenHandler);
-    $('#page-complete').on(flipper.Event.BEFORE_OPEN, Complete_BeforeOpenHandler);
-    $('#page-complete').on(flipper.Event.AFTER_CLOSE, Complete_AfterCloseHandler);
-    
-    $('.return-checkout').click(ReturnCheckout_ClickHandler);
-    $('.return-main-menu').unbind('click').click(ReturnMainMenu_ClickHandler);
-    $('.call-attendant').unbind('click').click(CallAttendent_ClickHandler);
-    $('.return-payment-methods').click(InvalidPaymentType_ReturnPaymentMethods_ClickHandler);
-    
-    $('#overlay-error .continue').click(Error_Continue_ClickHandler);
-    $('#overlay-large-item').click(LargeItem_Cancel_ClickHandler);
-    $('#overlay-large-item').on(scanner.EVENT, LargeItem_Cancel_ClickHandler);
-    $('#overlay-large-item .cancel').click(LargeItem_Cancel_ClickHandler);
-    $('#overlay-type-in-sku .cancel').click(TypeInSKU_Cancel_ClickHandler);
-    $('#overlay-type-in-sku .continue').click(TypeInSKU_Continue_ClickHandler);
-    $('#overlay-call-attendant .continue').click(CallAttendent_Continue_ClickHandler);
-    
-    $('#overlay-scale .cancel').click(Scale_Cancel_ClickHandler);
-    scale.addEventListener(scale.Event.ADDED, Scale_ItemAdded);
-    scale.addEventListener(scale.Event.REMOVED, Scale_ItemRemoved);
-}
-
-function Initial_StartEnglish_ClickHandler(e)
-{ 
-    locales.setLanguage(locales.Languages.ENGLISH);
-    flipper.openPage('#page-checkout');
-}
-function Initial_StartSpanish_ClickHandler(e)
-{
-    locales.setLanguage(locales.Languages.SPANISH);
-    flipper.openPage('#page-checkout');
-}
-function Initial_ScannerHandler(e, sku) 
-{
-    Initial_StartEnglish_ClickHandler(e);
-    AddItemToReceipt(sku);
-}
-function Initial_BeforeOpenHandler(e)
-{
-    document.getElementById('background-video').play();
-}
-function Initial_AfterCloseHandler(e)
-{
-    document.getElementById('background-video').pause();
-}
-function Checkout_BeforeOpenHandler(e) 
-{
-    scanner.scanning = true;
-}
-function Checkout_AfterCloseHandler(e) 
-{
-    scanner.scanning = false;
-}
-function Checkout_ScannerHandler(e, sku) 
-{
-    LargeItem_Cancel_ClickHandler();
-    AddItemToReceipt(sku);
-}
-function Checkout_LookupItem_ClickHandler(e)
-{
-    flipper.openPage('#page-lookup');
-}
-function Checkout_LargeItem_ClickHandler(e)
-{
-    flipper.openOverlay('#overlay-large-item');
-}
-function Checkout_TypeInSKU_ClickHandler(e)
-{
-    scanner.scanning = false;
-    $('#overlay-type-in-sku #sku-query').val('');
-    flipper.openOverlay('#overlay-type-in-sku');
-}
-function Checkout_PayNow_ClickHandler(e)
-{
-    flipper.openPage('#page-payment-options');
-}
-function Lookup_BeforeOpenHandler(e)
-{
-    ProductSearch();
-}
-function Lookup_BeforeSearchHandler(e)
-{
-    if($('#page-lookup .search-results .search-result').length > 0)
-    {
-        $('#page-lookup .search-results .search-result').addClass('search-result-animation-out');
-        setTimeout(function()
-        {
-            $('#page-lookup .search-results').empty();
-            $('#modules .loading-animation').clone().appendTo('#page-lookup .search-results');
-        }, 1000);
-    }
-    else
-    {
-        $('#page-lookup .search-results').empty();
-        $('#modules .loading-animation').clone().appendTo('#page-lookup .search-results');
-    }
-}
-function Lookup_AfterSearchHandler(e)
-{
-    $('#page-lookup .search-results .loading-animation').remove();
-    $('#page-lookup .search-results .search-result').addClass('search-result-animation-in');
-    setTimeout(function()
-    {
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-in');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-1');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-2');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-3');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-4');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-5');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-6');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-7');
-        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-8');
-    }, 1000);
-}
-function Lookup_SearchItem_ClickHandler(e)
-{
-    var sku = $('.title .sku', $(this)).html();    
-
-    flipper.openPage('#page-checkout');
-    $('#page-lookup #item-search-query').val('');
-    
-    AddItemToReceipt(sku);
-}
-function Lookup_ItemSearchQuery_KeyUpHandler(e)
-{
-    var i = 0;
-    clearInterval(SearchIntervalID);
-    SearchIntervalID = setInterval(function(){UpdateProgress_SearchTimer(i);i++;}, 1);
-}
-function PaymentOptions_Card_ClickHandler(e)
-{
-    flipper.openPage('#page-payment');
-}
-function PaymentOptions_Cash_ClickHandler(e)
-{
-    flipper.openPage('#page-invalid-payment-type');
-}
-function InvalidPaymentType_ReturnPaymentMethods_ClickHandler(e)
-{
-    flipper.openPage('#page-payment-options');
-}
-function Payment_BeforeOpenHandler(e) 
-{
-    swiper.scanning = true;
-}
-function Payment_AfterCloseHandler(e) 
-{
-    swiper.scanning = false;
-}
-function Payment_CardReaderHandler(e, card)
-{
-    var amount = FormatDecimalFromCurrency($('#page-payment .receipt-total .amount').html());
-    stripe.chargeCard(card, amount, function(response) {
-        if (response.success) {
-            flipper.openPage('#page-complete');
-        }
-        else {
-            ShowError('There was a problem accepting your card: ' + response.message);
-        }
-    });
-}
-function Complete_AfterOpenHandler(e)
-{
-    setTimeout(function()
-    {
-       ReturnMainMenu_ClickHandler(); 
-    }, 3000);
-}
-function Complete_BeforeOpenHandler(e)
-{
-    document.getElementById('complete-video').play();
-}
-function Complete_AfterCloseHandler(e)
-{
-    document.getElementById('complete-video').pause();
-}
-
-function ReturnMainMenu_ClickHandler(e)
-{
-    Reinit();
     flipper.openPage('#page-initial');
-}
-function ReturnCheckout_ClickHandler(e)
-{
-    flipper.openPage('#page-checkout');
-}
-function CallAttendent_ClickHandler(e)
-{
-    flipper.openOverlay('#overlay-call-attendant');
-}
+};
 
-function Error_Continue_ClickHandler(e) 
-{
-     flipper.closeOverlay('#overlay-large-item');
-}
-function LargeItem_Cancel_ClickHandler(e)
-{
-    flipper.closeOverlay('#overlay-large-item');
-}
-function TypeInSKU_Cancel_ClickHandler(e)
-{
-    scanner.scanning = true;
-    flipper.closeOverlay('#overlay-type-in-sku'); 
-}
-function TypeInSKU_Continue_ClickHandler(e)
-{
-    scanner.scanning = true;
-    var sku = $('#overlay-type-in-sku #sku-query').val();
-    flipper.closeOverlay('#overlay-type-in-sku');
-    AddItemToReceipt(sku);
-}
-function CallAttendent_Continue_ClickHandler(e)
-{
-    flipper.closeOverlay('#overlay-call-attendant');
-}
-function Scale_Cancel_ClickHandler(e)
-{
-    scaleActive = false;
-    flipper.closeOverlay('#overlay-scale');
-}
-function Scale_ItemAdded() {
-    $('#overlay-scale .message').hide();
-    $('#overlay-scale .wait').show();
-}
-function Scale_ItemRemoved() {
-    $('#overlay-scale .wait').hide();  
-    $('#overlay-scale .message').show();
-}
 
-//Actions
-function ShowError(message) {
+/*******************************************************************************
+ * Actions
+ ******************************************************************************/
+/**
+ * Displays an error message overlay.
+ * @param {string} message the error message to display
+ * @returns {undefined}
+ */
+main.showError = function(message) {
     $('#overlay-error .error').html(message);
     flipper.openOverlay('#overlay-error');
-}
-function ProductSearch(query)
-{
+};
+/**
+ * Searches for a product by the given query.
+ * <p>
+ * If the query is undefined, all products will be loaded.
+ * @param {string} query the product to search for, or undefined to display 
+ *      all products
+ * @returns {undefined}
+ */
+main.productSearch = function(query) {
     $('#page-lookup').trigger('beforesearch');
-    if(typeof query === 'undefined')
-    {
+    if(typeof query === 'undefined') {
         //mock delay for loading animation
-        setTimeout(function()
-        {
-            for(var i=0; i<data.productsArray.length; i++)
-            {
+        setTimeout(function() {
+            for (var i = 0; i < data.productsArray.length; i++) {
                 var product = data.productsArray[i];
                 var productElement = product.getSearchResult();
                 
-                if(i < 8)
-                {
+                if (i < 8) {
                     productElement.addClass('search-result-animation-' + (i+1).toString());
                 }
                 
-                productElement.click(Lookup_SearchItem_ClickHandler);
+                productElement.click(main.lookupItemClicked);
                 $('#page-lookup .search-results').append(productElement);
             }
             $('#page-lookup').trigger('aftersearch');
         }, 2000);
     }
-    else
-    {
-        setTimeout(function()
-        {
-            for(var i=0; i<data.productsArray.length; i++)
-            {
+    else {
+        setTimeout(function() {
+            for (var i = 0; i< data.productsArray.length; i++) {
                 var product = data.productsArray[i];
 
                 var searchTerm = query.toLowerCase();
                 var matchTerm = product.name.toLowerCase();
-                if(matchTerm.indexOf(searchTerm) > -1)
-                {
+                if (matchTerm.indexOf(searchTerm) > -1) {
                     var productElement = product.getSearchResult();
 
-                    if(i < 8)
-                    {
+                    if(i < 8) {
                         productElement.addClass('search-result-animation-' + (i+1).toString());
                     }
 
-                    productElement.click(Lookup_SearchItem_ClickHandler);
+                    productElement.click(main.lookupItemClicked);
                     $('#page-lookup .search-results').append(productElement);
                 }
             }
             $('#page-lookup').trigger('aftersearch');
         }, 2000);
     }
-    
-    
-}
-
-function AddItemToReceipt(sku)
-{
+};
+/**
+ * Adds an item to the current session's receipt.
+ * @param {string|Object} sku the item's SKU, or the ReceiptItem object to add
+ * @returns {undefined}
+ */
+main.addItemToReceipt = function(sku) {
     var product = sku;
     if (typeof sku === 'string') {
         product = data.productsSku[sku];
@@ -377,14 +265,14 @@ function AddItemToReceipt(sku)
     }
     
     if (typeof product === 'undefined') {
-        ShowError('Invalid product, please see an attendant for assistance');
+        main.showError('Invalid product, please see an attendant for assistance');
         return;
     }
     
     if (product.weightPrice > 0) {
-        scaleActive = true;
+        main.scaleActive = true;
         scanner.scanning = false;
-        Scale_ItemRemoved();
+        main.scaleItemRemoved();
         setTimeout(function() {
             //Allow for CSS transitions
             flipper.openOverlay('#overlay-scale');
@@ -392,7 +280,7 @@ function AddItemToReceipt(sku)
         
         var attempts = 0;
         var getWeight = function() {
-            if (!scaleActive) {
+            if (!main.scaleActive) {
                 return;
             }
             scale.getWeightOunces(function(weight) {
@@ -402,9 +290,9 @@ function AddItemToReceipt(sku)
 
                     flipper.closeOverlay('#overlay-scale');
                     scanner.scanning = true;
-                    if (scaleActive) {
-                        AddItemToReceipt(receiptItem);
-                        scaleActive = false;
+                    if (main.scaleActive) {
+                        main.addItemToReceipt(receiptItem);
+                        main.scaleActive = false;
                     }
                 }
                 else {
@@ -413,12 +301,12 @@ function AddItemToReceipt(sku)
                         setTimeout(getWeight, 1000);
                     }
                     else {
-                        scaleActive = false;
+                        main.scaleActive = false;
                         scanner.scanning = true;
                         flipper.closeOverlay('#overlay-scale');
                         //Allow for CSS transitions
                         setTimeout(function() {
-                            ShowError('An item was not placed on the scale');
+                            main.showError('An item was not placed on the scale');
                         }, 1000);
                     }
                 }
@@ -430,9 +318,9 @@ function AddItemToReceipt(sku)
         main.session.receipt.addItem(sku);
         var receipt = $('.receipt-container .receipt');
         receipt.scrollTop(receipt.prop("scrollHeight"));
-        $('.receipt-container .receipt-totals .receipt-subtotal .amount').html(FormatCurrency(main.session.receipt.getSubTotal()));
-        $('.receipt-container .receipt-totals .receipt-tax .amount').html(FormatCurrency(main.session.receipt.getTaxes()));
-        $('.receipt-container .receipt-totals .receipt-total .amount').html(FormatCurrency(main.session.receipt.getGrandTotal()));
+        $('.receipt-container .receipt-totals .receipt-subtotal .amount').html(main.formatCurrency(main.session.receipt.getSubTotal()));
+        $('.receipt-container .receipt-totals .receipt-tax .amount').html(main.formatCurrency(main.session.receipt.getTaxes()));
+        $('.receipt-container .receipt-totals .receipt-total .amount').html(main.formatCurrency(main.session.receipt.getGrandTotal()));
 
         if(main.session.receipt.recieptItems.length > 0)
         {
@@ -443,39 +331,204 @@ function AddItemToReceipt(sku)
             $('#page-checkout #pay-now').removeClass('active');
         }
     }
-}
+};
 
-function UpdateProgress_SearchTimer(interval)
-{
-    if(interval < 200)
-    {
-        $('#page-lookup #search-timer-progress').val(interval);
+/*******************************************************************************
+ * Listeners
+ ******************************************************************************/
+/**
+ * Start the app with the English locale.
+ * @returns {undefined}
+ */
+main.startEnglish = function() { 
+    locales.setLanguage(locales.Languages.ENGLISH);
+    flipper.openPage('#page-checkout');
+};
+/**
+ * Start the app with the Spanish locale.
+ * @returns {undefined}
+ */
+main.startSpanish = function() {
+    locales.setLanguage(locales.Languages.SPANISH);
+    flipper.openPage('#page-checkout');
+};
+/**
+ * Start the app with the English locale and add the scanned item.
+ * @param {Event} e 
+ * @param {string} sku item SKU to add
+ * @returns {undefined}
+ */
+main.startScanner = function(e, sku) {
+    main.startEnglish();
+    main.addItemToReceipt(sku);
+};
+
+/**
+ * Called whenever a scan event occurs on the checkout page.
+ * @param {Event} e the scan event
+ * @param {string} sku the SKU scanned
+ * @returns {undefined}
+ */
+main.checkoutScanner = function(e, sku) {
+    main.closeOverlay();
+    main.addItemToReceipt(sku);
+};
+/**
+ * Closes the current overlay.
+ * <p>
+ * This is equivalent to flipper.closeOverlay(), but if flipper.closeOverlay 
+ * is added as an event listener, an error will occur since the argument 
+ * passed to flipper.closeOverlay will be an Event object instead of 
+ * undefined.
+ * @returns {undefined}
+ */
+main.closeOverlay = function() {
+    flipper.closeOverlay();
+};
+
+/**
+ * Animates out the current search results for a new set of results.
+ * @returns {undefined}
+ */
+main.lookupBeforeSearch = function() {
+    if ($('#page-lookup .search-results .search-result').length > 0) {
+        $('#page-lookup .search-results .search-result').addClass('search-result-animation-out');
+        setTimeout(function() {
+            $('#page-lookup .search-results').empty();
+            $('#modules .loading-animation').clone().appendTo('#page-lookup .search-results');
+        }, 1000);
     }
-    else
-    {
-        clearInterval(SearchIntervalID);
-        $('#page-lookup #search-timer-progress').val(0);
+    else {
+        $('#page-lookup .search-results').empty();
+        $('#modules .loading-animation').clone().appendTo('#page-lookup .search-results');
+    }
+};
+/**
+ * Animates in the new search results.
+ * @returns {undefined}
+ */
+main.lookupAfterSearch = function() {
+    $('#page-lookup .search-results .loading-animation').remove();
+    $('#page-lookup .search-results .search-result').addClass('search-result-animation-in');
+    setTimeout(function() {
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-in');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-1');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-2');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-3');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-4');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-5');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-6');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-7');
+        $('#page-lookup .search-results .search-result').removeClass('search-result-animation-8');
+    }, 1000);
+};
+/**
+ * Adds the search result item clicked on to the session's receipt.
+ * @returns {undefined}
+ */
+main.lookupItemClicked = function() {
+    var sku = $('.title .sku', $(this)).html();   
+    flipper.openPage('#page-checkout');    
+    main.addItemToReceipt(sku);
+};
+/**
+ * Starts a progress bar whenever a key is pressed.
+ * <p>
+ * This method resets the progress bar. When the progress bar is finished 
+ * (the user has not pressed any keys for a short amount of time), the 
+ * user's input will then be sent to search for products.
+ * @returns {undefined}
+ */
+main.lookupStartProgress = function() {
+    clearInterval(main.intervalId);
+    var i = 0;
+    main.intervalId = setInterval(function(){
+        main.lookupUpdateProgress(i);
+        i++;
+    }, 1);
+};
+/**
+ * Update the lookup progress bar with the given value.
+ * <p>
+ * Once the progress bar has reached its max value, the user's input will 
+ * be passed to main.productSearch().
+ * @param {number} value the value to set the progress bar to
+ * @returns {undefined}
+ */
+main.lookupUpdateProgress = function(value) {
+    var progress = $('#page-lookup #search-timer-progress');
+    
+    if (value < progress.attr('max')) {
+        progress.attr('value', value);
+    }
+    else {
+        clearInterval(main.intervalId);
+        progress.attr('value', 0);
         var searchQuery = $('#page-lookup #item-search-query').val();
-        ProductSearch(searchQuery);
+        main.productSearch(searchQuery);
     }
-}
+};
 
-//Helper Functions
-function FormatCurrency(value, hideCurrencyType)
-{
-    var formattedCurrency = '';
-    if(hideCurrencyType === true)
-    {
-        formattedCurrency =  parseFloat(value, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
-    }
-    else
-    {
-        formattedCurrency = main.session.currency + parseFloat(value, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
-    }
-    return formattedCurrency;
-}
-function FormatDecimalFromCurrency(value)
-{
+/**
+ * Called whenever a swipe event occurs on the payment page.
+ * <p>
+ * This method will verify the card and process payment, or alert the user 
+ * that there was an error with their payment.
+ * @param {Event} e the swipe event
+ * @param {Card} card the Card swiped
+ * @returns {undefined}
+ */
+main.paymentSwiper = function(e, card) {
+    var amount = main.currencyToFloat($('#page-payment .receipt-total .amount').html());
+    stripe.chargeCard(card, amount, function(response) {
+        if (response.success) {
+            flipper.openPage('#page-complete');
+        }
+        else {
+            main.showError('There was a problem accepting your card: ' + response.message);
+        }
+    });
+};
+
+/**
+ * Called whenever an item is added to the scale. 
+ * <p>
+ * This will display a loading animation to indicate to the user that the 
+ * scale is processing the item's weight.
+ * @returns {undefined}
+ */
+main.scaleItemAdded = function() {
+    $('#overlay-scale .message').hide();
+    $('#overlay-scale .wait').show();
+};
+/**
+ * Called whenever an item is removed from the scale.
+ * <p>
+ * This will display a message to the user indicating that no item is currently 
+ * on the scale and that it is ready for an item to be placed.
+ * @returns {undefined}
+ */
+main.scaleItemRemoved = function() {
+    $('#overlay-scale .wait').hide();  
+    $('#overlay-scale .message').show();
+};
+
+/*******************************************************************************
+ * Helper Functions
+ ******************************************************************************/
+/**
+ * Converts a Number value into a currency formatted String.
+ * @param {number} value the value to format
+ * @returns {string} value formatted as a currency String
+ */
+main.formatCurrency = function(value) {
+    return main.session.currency + parseFloat(value, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString();
+};
+/**
+ * Converts a currency String into a Number
+ * @param {string} value the currency String to convert to a Number
+ * @returns {number} the value as a Number
+ */
+main.currencyToFloat = function(value) {
     return parseFloat(value.substr(1));
-}
-
+};

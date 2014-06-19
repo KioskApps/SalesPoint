@@ -62,6 +62,11 @@
         var $flip = $(flip);
         var $page = $(page);
                 
+        //If trying to open the current page again, just return
+        if ($page.hasClass('current')) {
+            return;
+        }
+                
         //Close the current page
         var $current = $flip.find('.current');
         $current.trigger(flipper.Event.BEFORE_CLOSE);
