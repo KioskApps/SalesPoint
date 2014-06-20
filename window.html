@@ -1,407 +1,448 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>SalesPoint</title>
-        <link rel="stylesheet" type="text/css" href="styles/main.css">
-        <link rel="stylesheet" type="text/css" href="styles/startup.css">
-        <link rel="stylesheet" type="text/css" href="styles/flipper.css">
-        <link rel="stylesheet" type="text/css" href="styles/stillthere.css">
+<head>
+    <title>SalesPoint</title>
+    <link rel="stylesheet" type="text/css" href="styles/main.css">
+    <link rel="stylesheet" type="text/css" href="styles/startup.css">
+    <link rel="stylesheet" type="text/css" href="styles/flipper.css">
+    <link rel="stylesheet" type="text/css" href="styles/stillthere.css">
+
+    <script src="scripts/lib/jquery-2.1.1.min.js"></script>
+    <script src="scripts/lib/jquery.velocity.min.js"></script>
+    <script src="scripts/lib/flipper.js"></script>
+    <script src="scripts/lib/spreadsheet.js"></script>
+    <script src="scripts/lib/sandbox.js"></script>
+    <script src="scripts/lib/scanner.js"></script>
+    <script src="scripts/lib/swiper.js"></script>
+    <script src="scripts/lib/stripe.js"></script>
+    <script src="scripts/lib/stillthere.js"></script>
+
+    <script src="scripts/data.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/startup.js"></script>
+    <script src="scripts/locales.js"></script>
+    <script src="scripts/scale.js"></script>
+
+    <script src="scripts/objects/session.js"></script>
+    <script src="scripts/objects/receipt.js"></script>
+    <script src="scripts/objects/receiptItem.js"></script>
+    <script src="scripts/objects/product.js"></script>
+</head>
+
+<body>
+    <div id="flipper" class="flipper">
+        <div class="page" id="page-startup">
+            <div class="page-container">
+                <header>SalesPoint</header>
+                <div class="content">
+                    <div class="test">
+                        <header>Hardware Tests (Optional)</header>
+                        <p>Test each of the following hardware devices to ensure proper usage</p>
+                        <div class="barcode">
+                            <span class="title"><strong>Barcode Reader</strong> (Scan an Item)</span>
+                            <span class="status"></span>
+                        </div>
+                        <div class="swiper">
+                            <span class="title"><strong>Card Reader</strong> (Swipe a Card)</span>
+                            <span class="status"></span> 
+                        </div>
+                        <div class="scaleconnect">
+                            <span class="title"><strong>Scale Connected</strong></span>
+                            <span class="status"></span> 
+                        </div>
+                        <div class="scalepermission">
+                            <span class="title"><strong>Scale Permission</strong> (Tap the Screen)</span>
+                            <span class="status"></span> 
+                        </div>
+                        <div class="scaleadd">
+                            <span class="title"><strong>Scale Add Item</strong> (Place Item on Scale)</span>
+                            <span class="status"></span> 
+                        </div>
+                        <div class="scaleweight">
+                            <span class="title"><strong>Scale Stable Weight</strong> (Wait for Weight)</span>
+                            <span class="status"></span> 
+                        </div>
+                        <div class="scaleremove">
+                            <span class="title"><strong>Scale Remove Item</strong> (Remove Item from Scale)</span>
+                            <span class="status"></span> 
+                        </div>
+                    </div>
+                    <button class="start">Touch to Start App</button>
+                </div>
+                <footer></footer>
+            </div>
+        </div>
         
-        <script src="scripts/lib/jquery-2.1.1.min.js"></script>
-        <script src="scripts/lib/jquery.velocity.min.js"></script>
-        <script src="scripts/lib/flipper.js"></script>
-        <script src="scripts/lib/spreadsheet.js"></script>
-        <script src="scripts/lib/sandbox.js"></script>
-        <script src="scripts/lib/scanner.js"></script>
-        <script src="scripts/lib/swiper.js"></script>
-        <script src="scripts/lib/stripe.js"></script>
-        <script src="scripts/lib/stillthere.js"></script>
+        <div class="page" id="page-initial">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/O Mart</span>
+                    <span class="page-title"></span>
+                </header>
+                <div class="content">
+                    <video poster="images/market_poster.png" id="background-video" loop>
+                        <source src="videos/Food_Market_-_Tomatoes_-_Free_Stock_Video_Footage_.webm" type="video/webm">
+                    </video>
+                    <div class="user-options">
+                        <button class="start-button english">Start English</button>
+                        <button class="start-button spanish">Comience Espa&ntildeol</button>
+                    </div>
+                </div>
+                <footer></footer>
+            </div>
+        </div>
         
-        <script src="scripts/data.js"></script>
-        <script src="scripts/main.js"></script>
-        <script src="scripts/startup.js"></script>
-        <script src="scripts/locales.js"></script>
-        <script src="scripts/scale.js"></script>
+        <div class="page" id="page-checkout">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/0 Mart</span>
+                    <span class="page-title">Checkout(caja)</span>
+                </header>
+                <div class="content">
+                    <div class="receipt-container">
+                        <header>My Items(mis art&iacute;culos)</header>
+                        <div class="receipt"></div>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-totals">
+                            <div class="receipt-subtotal total">
+                                <span class="title">Subtotal</span>
+                                <span class="amount"></span>
+                            </div>
+                            <div class="receipt-tax total">
+                                <span class="title">Sales Tax</span>
+                                <span class="amount"></span>
+                            </div>
+                            <div class="receipt-total total">
+                                <span class="title">Total</span>
+                                <span class="amount"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-actions-container">
+                        <div class="helper-images">
+                        </div>
+                        <div class="instructions">
+                            <p>Scan an item, or choose an option below</p>
+                        </div>
+                        <div class="checkout-options">
+                            <button id="lookup-item" class="checkout-option">
+                                <img class="icon" src="images/lookup-item.png" width="100" height="100" />
+                                <div class="title">Lookup Item</div>
+                                <div class="description">Browse through our products and find an item by name.</div>
+                            </button>
+                            <button id="large-item" class="checkout-option">
+                                <img class="icon" src="images/large-item.png" width="100" height="100" />
+                                <div class="title">Large Item</div>
+                                <div class="description">Call an attendant to scan a large or heavy item in your cart.</div>
+                            </button>
+                            <button id="type-in-sku" class="checkout-option">
+                                <img class="icon" src="images/enter-sku.png" width="100" height="100" />
+                                <div class="title">Type in SKU</div>
+                                <div class="description">Add an item using the products SKU number.</div>
+                            </button>
+                        </div>
+                        <div class="payment-options">
+                            <button id="pay-now">Pay Now</button>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <button class="call-attendant">
+                        <img src="images/call-attendant.png" width="25" height="25" /><span class="title">Call Attendant</span>
+                    </button>
+                    <button class="return-main-menu">
+                        <img src="images/cancel.png" width="25" height="25" /><span class="title">Cancel Transaction</span>
+                    </button>
+                </footer>
+            </div>
+        </div>
         
-        <script src="scripts/objects/session.js"></script>
-        <script src="scripts/objects/receipt.js"></script>
-        <script src="scripts/objects/receiptItem.js"></script>
-        <script src="scripts/objects/product.js"></script>
-    </head>
-    <body>
-        <div id="flipper" class="flipper">
-            <div class="page" id="page-startup">
-                <div class="page-container">
-                    <header>SalesPoint</header>
-                    <div class="content">
-                        <div class="test">
-                            <header>Hardware Tests (Optional)</header>
-                            <p>Test each of the following hardware devices to ensure proper usage</p>
-                            <div class="barcode">
-                                <span class="title"><strong>Barcode Reader</strong> (Scan an Item)</span>
-                                <span class="status"></span>
-                            </div>
-                            <div class="swiper">
-                                <span class="title"><strong>Card Reader</strong> (Swipe a Card)</span>
-                                <span class="status"></span>                                
-                            </div>
-                            <div class="scaleconnect">
-                                <span class="title"><strong>Scale Connected</strong></span>
-                                <span class="status"></span>                                
-                            </div>
-                            <div class="scalepermission">
-                                <span class="title"><strong>Scale Permission</strong> (Tap the Screen)</span>
-                                <span class="status"></span>                                
-                            </div>
-                            <div class="scaleadd">
-                                <span class="title"><strong>Scale Add Item</strong> (Place Item on Scale)</span>
-                                <span class="status"></span>                                
-                            </div>
-                            <div class="scaleweight">
-                                <span class="title"><strong>Scale Stable Weight</strong> (Wait for Weight)</span>
-                                <span class="status"></span>                                
-                            </div>
-                            <div class="scaleremove">
-                                <span class="title"><strong>Scale Remove Item</strong> (Remove Item from Scale)</span>
-                                <span class="status"></span>                                
-                            </div>
+        <div class="page" id="page-lookup">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/0 Mart</span>
+                    <span class="page-title">Product Search</span>
+                </header>
+                <footer>
+                    <button class="call-attendant">
+                        <img src="images/call-attendant.png" width="25" height="25" /><span class="title">Call Attendant</span>
+                    </button>
+                    <button class="return-checkout">
+                        <img src="images/return.png" width="25" height="25" /><span class="title">Return to Checkout</span>
+                    </button>
+                    <button class="return-main-menu">
+                        <img src="images/cancel.png" width="25" height="25" /><span class="title">Cancel Transaction</span>
+                    </button>
+                </footer>
+                <div class="content">
+                    <div class="search-controls">
+                        <div class="instructions">
+                            <p>Use the on-screen keyboard to find a product by searching for the product name.</p>
                         </div>
-                        <button class="start">Touch to Start App</button>
+                        <input type="text" id="item-search-query" placeholder="Touch to Type" />
+                        <progress id="search-timer-progress" value="0" max="200"></progress>
                     </div>
-                    <footer></footer>
+                    <div class="search-results"></div>
                 </div>
             </div>
-            <div class="page" id="page-initial">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/O Mart</span>
-                        <span class="page-title"></span>
-                    </header>
-                    <div class="content">
-                        <video poster="images/market_poster.png" id="background-video" loop>
-                            <source src="videos/Food_Market_-_Tomatoes_-_Free_Stock_Video_Footage_.webm" type="video/webm">
-                        </video>
-                        <div class="user-options">
-                            <button class="start-button english">Start English</button>
-                            <button class="start-button spanish">Comience Espa&ntildeol</button>
-                        </div>
-                    </div>
-                    <footer></footer>
-                </div>
-            </div>
-            <div class="page" id="page-checkout">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/0 Mart</span>
-                        <span class="page-title">Checkout(caja)</span>
-                    </header>
-                    <div class="content">
-                        <div class="receipt-container">
-                            <header>My Items(mis art&iacute;culos)</header>
-                            <div class="receipt"></div>
-                            <div class="receipt-divider"></div>
-                            <div class="receipt-totals">
-                                <div class="receipt-subtotal total">
-                                    <span class="title">Subtotal</span>
-                                    <span class="amount"></span>
-                                </div>
-                                <div class="receipt-tax total">
-                                    <span class="title">Sales Tax</span>
-                                    <span class="amount"></span>
-                                </div>
-                                <div class="receipt-total total">
-                                    <span class="title">Total</span>
-                                    <span class="amount"></span>
-                                </div>
+        </div>
+        
+        <div class="page" id="page-payment-options">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/0 Mart</span>
+                    <span class="page-title">Payment Method</span>
+                </header>
+                <div class="content">
+                    <div class="receipt-container">
+                        <header>My Items(mis art&iacute;culos)</header>
+                        <div class="receipt"></div>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-totals">
+                            <div class="receipt-subtotal total">
+                                <span class="title">Subtotal</span>
+                                <span class="amount"></span>
                             </div>
-                        </div>
-                        <div class="page-actions-container">
-                            <div class="helper-images">
+                            <div class="receipt-tax total">
+                                <span class="title">Sales Tax</span>
+                                <span class="amount"></span>
                             </div>
-                            <div class="instructions"><p>Scan an item, or choose an option below</p></div>
-                            <div class="checkout-options">
-                                <button id="lookup-item" class="checkout-option">
-                                    <img class="icon" src="images/lookup-item.png" width="100" height="100" />
-                                    <div class="title">Lookup Item</div>
-                                    <div class="description">Browse through our products and find an item by name.</div>
-                                </button>
-                                <button id="large-item" class="checkout-option">
-                                    <img class="icon" src="images/large-item.png" width="100" height="100" />
-                                    <div class="title">Large Item</div>
-                                    <div class="description">Call an attendant to scan a large or heavy item in your cart.</div>
-                                </button>
-                                <button id="type-in-sku" class="checkout-option">
-                                    <img class="icon" src="images/enter-sku.png" width="100" height="100" />
-                                    <div class="title">Type in SKU</div>
-                                    <div class="description">Add an item using the products SKU number.</div>
-                                </button>
-                            </div>
-                            <div class="payment-options">                                
-                                <button id="pay-now">Pay Now</button>
+                            <div class="receipt-total total">
+                                <span class="title">Total</span>
+                                <span class="amount"></span>
                             </div>
                         </div>
                     </div>
-                    <footer>
-                        <button class="call-attendant"><img src="images/call-attendant.png" width="25" height="25"/><span class="title">Call Attendent</span></button>
-                        <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
-                    </footer>
-                </div>
-            </div>
-            <div class="page" id="page-lookup">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/0 Mart</span>
-                        <span class="page-title">Product Search</span>
-                    </header>
-                    <footer>
-                        <button class="call-attendant"><img src="images/call-attendant.png" width="25" height="25"/><span class="title">Call Attendent</span></button>
-                        <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
-                        <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
-                    </footer>
-                    <div class="content">
-                        <div class="search-controls">
-                            <div class="instructions">
-                                <p>Use the on-screen keyboard to find a product by searching for the product name.</p>
-                            </div>
-                            <input type="text" id="item-search-query" placeholder="Touch to Type"/>
-                            <progress id="search-timer-progress" value="0" max="200"></progress>
-                        </div>
-                        <div class="search-results"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="page" id="page-payment-options">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/0 Mart</span>
-                        <span class="page-title">Payment Method</span>
-                    </header>
-                    <div class="content">
-                        <div class="receipt-container">
-                            <header>My Items(mis art&iacute;culos)</header>
-                            <div class="receipt"></div>
-                            <div class="receipt-divider"></div>
-                            <div class="receipt-totals">
-                                <div class="receipt-subtotal total">
-                                    <span class="title">Subtotal</span>
-                                    <span class="amount"></span>
-                                </div>
-                                <div class="receipt-tax total">
-                                    <span class="title">Sales Tax</span>
-                                    <span class="amount"></span>
-                                </div>
-                                <div class="receipt-total total">
-                                    <span class="title">Total</span>
-                                    <span class="amount"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="page-actions-container">
-                            <div class="helper-images"></div>
-                            <div class="instructions">
-                                <p>Select your method of payment.</p>
-                            </div>
-                            <div class="payment-methods">
-                                <button class="payment-method card">
-                                    <img class="icon" src="images/cards.png" width="100" height="100" />
-                                    <div class="title">Card</div>
-                                    <div class="description">Credit/Debit</div>
-                                </button>
-                                <button class="payment-method cash invalid">
-                                    <img class="icon" src="images/cash.png" width="100" height="100" />
-                                    <div class="title">Cash</div>
-                                    <div class="description">Bills and Coins</div>
-                                </button>
-                                <button class="payment-method check invalid">
-                                    <img class="icon" src="images/checks.png" width="100" height="100" />
-                                    <div class="title">Check</div>
-                                    <div class="description">Paper or Electronic</div>
-                                </button>
-                                <button class="payment-method other invalid">
-                                    <img class="icon" src="images/other.png" width="100" height="100" />
-                                    <div class="title">Other</div>
-                                    <div class="description">Gift Card, WIC, etc...</div>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <footer>
-                        <button class="call-attendant"><img src="images/call-attendant.png" width="25" height="25"/><span class="title">Call Attendent</span></button>
-                        <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
-                        <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
-                    </footer>
-                </div>
-            </div>
-            <div class="page" id="page-invalid-payment-type">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/0 Mart</span>
-                        <span class="page-title">Payment</span>
-                    </header>
-                    <div class="content">
+                    <div class="page-actions-container">
                         <div class="helper-images"></div>
                         <div class="instructions">
-                            <p>We're sorry, this device is currently set to only accept Credit Card or Debit as payment types. We apologize for the inconvenience.</p>
-                            <p>Please select "Back to Payment Types" to choose a valid payment type, or wait for an attendant to complete your transaction.</p>
+                            <p>Select your method of payment.</p>
+                        </div>
+                        <div class="payment-methods">
+                            <button class="payment-method card">
+                                <img class="icon" src="images/cards.png" width="100" height="100" />
+                                <div class="title">Card</div>
+                                <div class="description">Credit/Debit</div>
+                            </button>
+                            <button class="payment-method cash invalid">
+                                <img class="icon" src="images/cash.png" width="100" height="100" />
+                                <div class="title">Cash</div>
+                                <div class="description">Bills and Coins</div>
+                            </button>
+                            <button class="payment-method check invalid">
+                                <img class="icon" src="images/checks.png" width="100" height="100" />
+                                <div class="title">Check</div>
+                                <div class="description">Paper or Electronic</div>
+                            </button>
+                            <button class="payment-method other invalid">
+                                <img class="icon" src="images/other.png" width="100" height="100" />
+                                <div class="title">Other</div>
+                                <div class="description">Gift Card, WIC, etc...</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <button class="call-attendant">
+                        <img src="images/call-attendant.png" width="25" height="25" /><span class="title">Call Attendant</span>
+                    </button>
+                    <button class="return-checkout">
+                        <img src="images/return.png" width="25" height="25" /><span class="title">Return to Checkout</span>
+                    </button>
+                    <button class="return-main-menu">
+                        <img src="images/cancel.png" width="25" height="25" /><span class="title">Cancel Transaction</span>
+                    </button>
+                </footer>
+            </div>
+        </div>
+        
+        <div class="page" id="page-invalid-payment-type">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/0 Mart</span>
+                    <span class="page-title">Payment</span>
+                </header>
+                <div class="content">
+                    <div class="helper-images"></div>
+                    <div class="instructions">
+                        <p>We're sorry, this device is currently set to only accept Credit Card or Debit as payment types. We apologize for the inconvenience.</p>
+                        <p>Please select "Back to Payment Types" to choose a valid payment type, or wait for an attendant to complete your transaction.</p>
+                    </div>
+                    <button class="return-payment-methods">Back to Payment Types</button>
+                </div>
+                <footer>
+                    <button class="call-attendant">
+                        <img src="images/call-attendant.png" width="25" height="25" /><span class="title">Call Attendant</span>
+                    </button>
+                    <button class="return-checkout">
+                        <img src="images/return.png" width="25" height="25" /><span class="title">Return to Checkout</span>
+                    </button>
+                    <button class="return-main-menu">
+                        <img src="images/cancel.png" width="25" height="25" /><span class="title">Cancel Transaction</span>
+                    </button>
+                </footer>
+            </div>
+        </div>
+        
+        <div class="page" id="page-payment">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/0 Mart</span>
+                    <span class="page-title">Payment</span>
+                </header>
+                <div class="content">
+                    <div class="receipt-container">
+                        <header>My Items(mis art&iacute;culos)</header>
+                        <div class="receipt"></div>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-totals">
+                            <div class="receipt-subtotal total">
+                                <span class="title">Subtotal</span>
+                                <span class="amount"></span>
+                            </div>
+                            <div class="receipt-tax total">
+                                <span class="title">Sales Tax</span>
+                                <span class="amount"></span>
+                            </div>
+                            <div class="receipt-total total">
+                                <span class="title">Total</span>
+                                <span class="amount"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="page-actions-container">
+                        <img src="images/pinpad-device.jpg" />
+                        <div class="instructions">Use the Pinpad device to complete your transaction</div>
+                        <div class="loading-container">
+                            <div class="loading-animation">
+                                <span id="bubble_1">
+                                    </span>
+                                <span id="bubble_2">
+                                    </span>
+                                <span id="bubble_3">
+                                    </span>
+                            </div>
                         </div>
                         <button class="return-payment-methods">Back to Payment Types</button>
                     </div>
-                    <footer>
-                        <button class="call-attendant"><img src="images/call-attendant.png" width="25" height="25"/><span class="title">Call Attendent</span></button>
-                        <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
-                        <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
-                    </footer>
                 </div>
-            </div>
-            <div class="page" id="page-payment">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/0 Mart</span>
-                        <span class="page-title">Payment</span>
-                    </header>
-                    <div class="content">
-                        <div class="receipt-container">
-                            <header>My Items(mis art&iacute;culos)</header>
-                            <div class="receipt"></div>
-                            <div class="receipt-divider"></div>
-                            <div class="receipt-totals">
-                                <div class="receipt-subtotal total">
-                                    <span class="title">Subtotal</span>
-                                    <span class="amount"></span>
-                                </div>
-                                <div class="receipt-tax total">
-                                    <span class="title">Sales Tax</span>
-                                    <span class="amount"></span>
-                                </div>
-                                <div class="receipt-total total">
-                                    <span class="title">Total</span>
-                                    <span class="amount"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="page-actions-container">
-                            <img src="images/pinpad-device.jpg" />
-                            <div class="instructions">Use the Pinpad device to complete your transaction</div>
-                            <div class="loading-container">
-                                <div class="loading-animation">
-                                    <span id="bubble_1">
-                                    </span>
-                                    <span id="bubble_2">
-                                    </span>
-                                    <span id="bubble_3">
-                                    </span>
-                                </div>
-                            </div>
-                            <button class="return-payment-methods">Back to Payment Types</button>
-                        </div>
-                        
-                    </div>
-                    <footer>
-                        <button class="call-attendant"><img src="images/call-attendant.png" width="25" height="25"/><span class="title">Call Attendent</span></button>
-                        <button class="return-checkout"><img src="images/return.png" width="25" height="25"/><span class="title">Return to Checkout</span></button>
-                        <button class="return-main-menu"><img src="images/cancel.png" width="25" height="25"/><span class="title">Cancel Transaction</span></button>
-                    </footer>
-                </div>
-            </div>
-            <div class="page" id="page-complete">
-                <div class="page-container">
-                    <header>
-                        <span class="store-name">I/0 Mart</span>
-                        <span class="page-title">Transaction Complete</span>
-                    </header>
-                    <div class="content">
-                        <video loop="true" poster="images/video_poster.png" id="complete-video">
-                            <source src="videos/Green_Leaves_Bokeh_with_Lens_Flare_-_Free_HD_Stock.webm" type="video/webm">
-                        </video>
-                        <div class="instructions">
-                            <div class="complete-thanks">Thank you for shopping with us!</div>
-                            <div class="complete-remove-bags">Please remove your bags from the bagging area, and take you receipt.</div>
-                        </div>
-                    </div>
-                    <footer>
-                    </footer>
-                </div>
+                <footer>
+                    <button class="call-attendant">
+                        <img src="images/call-attendant.png" width="25" height="25" /><span class="title">Call Attendant</span>
+                    </button>
+                    <button class="return-checkout">
+                        <img src="images/return.png" width="25" height="25" /><span class="title">Return to Checkout</span>
+                    </button>
+                    <button class="return-main-menu">
+                        <img src="images/cancel.png" width="25" height="25" /><span class="title">Cancel Transaction</span>
+                    </button>
+                </footer>
             </div>
         </div>
+        
+        <div class="page" id="page-complete">
+            <div class="page-container">
+                <header>
+                    <span class="store-name">I/0 Mart</span>
+                    <span class="page-title">Transaction Complete</span>
+                </header>
+                <div class="content">
+                    <video poster="images/video_poster.png" id="complete-video" loop>
+                        <source src="videos/Green_Leaves_Bokeh_with_Lens_Flare_-_Free_HD_Stock.webm" type="video/webm">
+                    </video>
+                    <div class="instructions">
+                        <div class="complete-thanks">Thank you for shopping with us!</div>
+                        <div class="complete-remove-bags">Please remove your bags from the bagging area, and take you receipt.</div>
+                    </div>
+                </div>
+                <footer>
+                </footer>
+            </div>
+        </div>
+    </div>
 
-        <div id="overlay" class="overlay">
-            <div class="background"></div>
-            <div class="foreground">
-                <div class="foreground-container"></div>
+    <div id="overlay" class="overlay">
+        <div class="background"></div>
+        <div class="foreground">
+            <div class="foreground-container"></div>
+        </div>
+    </div>
+    
+    <div class="hidden">
+        <div id="overlays">
+            <div id="overlay-large-item" class="overlay-content">
+                <img class="image" src="images/large-item.png" width="200" height="200" alt=""/>
+                <div class="content">
+                    <p class="message">Please wait and an attendant will be with you shortly to scan your large item.</p>
+                    <div class="actions">
+                        <button class="cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="overlay-type-in-sku" class="overlay-content">
+                <img class="image" src="images/enter-sku.png" width="200" height="200" alt=""/>
+                <div class="content">
+                    <p class="message">Use the on screen keyboard to enter a product's SKU, then select "Continue" to add it to your items.</p>
+                    <div class="user-input">
+                        <input id="sku-query" type="text" placeholder="Touch to Type" />
+                        <div class="actions">
+                            <button class="cancel">Cancel</button>
+                            <button class="continue">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="overlay-call-attendant" class="overlay-content">
+                <img class="image" src="images/call-attendant.png" width="200" height="200" alt=""/>
+                <div class="content">
+                    <p class="message">An attendant has been notified and will be with you shortly. Select "Continue" to resume checking out.</p>
+                    <div class="actions">
+                        <button class="continue">Continue</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="overlay-scale" class="overlay-content">
+                <img class="image" src="images/large-item.png" width="200" height="200" alt=""/>
+                <div class="content">
+                    <p class="message">Please place your item on the scale.</p>
+                    <div class="wait hidden">
+                        <p>Please wait one moment...</p>
+                        <div class="loading-animation white">
+                            <span id="bubble_1"></span>
+                            <span id="bubble_2"></span>
+                            <span id="bubble_3"></span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="overlay-error" class="overlay-content">
+                <img class="image" src="images/cancel.png" width="200" height="200" alt=""/>
+                <div class="content">
+                    <p class="error"></p>
+                    <div class="actions">
+                        <button class="continue">Continue</button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="hidden">
-            <div id="overlays">
-                <div id="overlay-large-item" class="overlay-content">
-                    <img class="image" src="images/large-item.png" width="200" height="200" />
-                    <div class="content">
-                        <p class="message">Please wait and an attendant will be with you shortly to scan your large item.</p>
-                        <div class="actions">
-                            <button class="cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="overlay-type-in-sku" class="overlay-content">
-                    <img class="image" src="images/enter-sku.png" width="200" height="200" />
-                    <div class="content">
-                        <p class="message">Use the on screen keyboard to enter a product's SKU, then select "Continue" to add it to your items.</p>
-                        <div class="user-input">
-                            <input id="sku-query" type="text" placeholder="Touch to Type"/>
-                            <div class="actions">
-                                <button class="cancel">Cancel</button>
-                                <button class="continue">Continue</button>
-                            </div>
-                        </div>                        
-                    </div>
-                </div>
-                <div id="overlay-call-attendant" class="overlay-content">
-                    <img class="image" src="images/call-attendant.png" width="200" height="200" />
-                    <div class="content">
-                        <p class="message">An attendant has been notified and will be with you shortly. Select "Continue" to resume checking out.</p>
-                        <div class="actions">
-                            <button class="continue">Continue</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="overlay-scale" class="overlay-content">
-                    <img class="image" src="images/large-item.png" width="200" height="200" />
-                    <div class="content">
-                        <p class="message">Please place your item on the scale.</p>
-                        <div class="wait hidden"> 
-                            <p>Please wait one moment...</p>
-                            <div class="loading-animation white">
-                                <span id="bubble_1"></span>
-                                <span id="bubble_2"></span>
-                                <span id="bubble_3"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="actions">
-                            <button class="cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="overlay-error" class="overlay-content">
-                    <img class="image" src="images/cancel.png" width="200" height="200" />
-                    <div class="content">
-                        <p class="error"></p>
-                        <div class="actions">
-                            <button class="continue">Continue</button>
-                        </div>
-                    </div>
-                </div>
+        
+        <div id="modules">
+            <div class="loading-animation">
+                <span id="bubble_1"></span>
+                <span id="bubble_2"></span>
+                <span id="bubble_3"></span>
             </div>
-            <div id="modules">
-                <div class="loading-animation">
-                    <span id="bubble_1">
-                    </span>
-                    <span id="bubble_2">
-                    </span>
-                    <span id="bubble_3">
-                    </span>
-                </div>
-            </div>
-      </div>
-        <iframe id="sandbox-scripts" class="hidden" src="scripts/sandbox-scripts.html"></iframe>
-    </body>
+        </div>
+    </div>
+    
+    <iframe id="sandbox-scripts" class="hidden" src="scripts/sandbox-scripts.html"></iframe>
+</body>
 </html>
