@@ -18,7 +18,7 @@
  * the higher-level HID implementation.
  */
 
-(function(window, Math) {
+(function(window) {
     //Scale Scope
     var scale = {};
     window.scale = scale;
@@ -28,24 +28,16 @@
      */
     scale.Event = {
         'ADDED': 'item-added',
-        'REMOVED': 'item-removed'
+        'REMOVED': 'item-removed',
+        'READ': 'scale-read',
+        'STABLE': 'scale-stable'
     };
     
-    /**
-     * How long to wait (ms) before sending another read request to get a 
-     * more accurate result.
-     */
-    scale.accuracyDelay = 500;
     /**
      * How many consecutive weight amount reads before a weight is deemed 
      * stable.
      */
     scale.accuracyConsecutive = 3;
-    /**
-     * Number of limited attempts to try before returning an error that the 
-     * scale could not get an accurate weight reading.
-     */
-    scale.accuracyAttemptLimit = 20;
     /**
      * Indicates whether or not the app has permission to access the scale.
      */
@@ -82,10 +74,17 @@
      */
     var connection;
     /**
-     * Map of recorded weight attempts to keep track of the accuracy 
-     * attempt limit for a read request.
+     * Tracks the last recorded weight, used to fire item added/removed 
+     * events.
+     * @type Number
      */
-    var weightAttempts = {};
+    var lastWeight = 0;
+    /**
+     * Number of consecutive weight readings, used to fire stable weight 
+     * read events.
+     * @type Number
+     */
+    var consecutive = 0;
     
     /**
      * Adds an event listener to the scale.
@@ -126,6 +125,19 @@
             }
         }
     };
+    /**
+     * Fires all listeners of the specified type.
+     * @param {string} type the type of event to fire
+     * @param {object} args any arguments to pass to the listener
+     * @returns {undefined}
+     */
+    var fireListeners = function(type, args) {
+        for (var key in listeners) {
+            if (listeners[key].type === type) {
+                listeners[key].listener(args);
+            }
+        }
+    };
     
     /**
      * Request a stable reading in ounces of the current scale's weight.
@@ -146,7 +158,11 @@
      * @returns {undefined}
      */
     scale.getWeightOunces = function(callback) {
-        getStableWeight(function(weight) {
+        if (!scale.isConnected && typeof callback === 'function') {
+            callback();
+            return;
+        }
+        var tempListener = function(weight) {
             if (weight && weight.grams) {
                 weight.amount = weight.amount * GRAMS_TO_OUNCES;
                 weight.grams = false;
@@ -156,97 +172,16 @@
             if (typeof callback === 'function') {
                 callback(weight);
             }
-        });
-    };
-    
-    /**
-     * Requests a stable weight read from the scale.
-     * @param {function(object)} callback callback to receive stable weight 
-     *      reading object
-     * @param {string} attemptId the current attempt ID to keep track of and 
-     *      limit the number of attempts for one weight read request
-     * @returns {undefined}
-     */
-    var getStableWeight = function(callback, attemptId) {
-        if (typeof attemptId === 'undefined') {
-            //Set the attempt ID to use
-            attemptId = 'ScaleRead' + Math.floor((Math.random() * 899) + 100);
-        }
-        if (typeof weightAttempts[attemptId] === 'undefined') {
-            //If no weight attempt object exists, create it
-            weightAttempts[attemptId] = {
-                'attempt': 0, //The number of attempts
-                'lastWeight': 0.0, //The last weight read
-                'consecutive': 0 //Number of consecutive same weight readings
-            };
-        }
-        
-        var attempt = weightAttempts[attemptId];
-        
-        setTimeout(function() {
-            read(function(weight) {
-                if (attempt.attempt < scale.accuracyAttemptLimit && weight) {
-                    if (weight.valid) {
-                        if (weight.stable) {
-                            //Calculate and fire listeners if an item 
-                            //is added or removed
-                            if (attempt.lastWeight === 0 && weight.amount > 0) {
-                                for (var key in listeners) {
-                                    if (listeners[key].type === scale.Event.ADDED) {
-                                        listeners[key].listener();
-                                    }
-                                }
-                            }
-                            if (attempt.lastWeight > 0 && weight.amount === 0) {
-                                for (var key in listeners) {
-                                    if (listeners[key].type === scale.Event.REMOVED) {
-                                        listeners[key].listener();
-                                    }
-                                }
-                            }
-                            
-                            //Update number of consecutive weight amount reads
-                            if (weight.amount === attempt.lastWeight) {
-                                attempt.consecutive = attempt.consecutive + 1;
-                            }
-                            else {
-                                attempt.consecutive = 0;
-                            }
-                            attempt.lastWeight = weight.amount;
-
-                            //If there have been enough consecutive weight amount
-                            //reads, callback, otherwise try again
-                            if (attempt.consecutive < scale.accuracyConsecutive) {
-                                getStableWeight(callback, attemptId);
-                            }
-                            else if (typeof callback === 'function') {
-                                callback(weight);
-                            }
-                        }
-                        else {
-                            getStableWeight(callback, attemptId);
-                        }
-                    }
-                    else {
-                        delete weightAttempts[attemptId];
-                        throw new Error('There is a problem with the scale');
-                    }
-                }
-                else if (typeof callback === 'function') {
-                    callback();
-                }
-                attempt.attempt = attempt.attempt + 1;
-            });
-        }, scale.accuracyDelay);
+            scale.removeEventListener(scale.Event.STABLE, tempListener);
+        };
+        scale.addEventListener(scale.Event.STABLE, tempListener);
     };
     
     /**
      * Reads weight data from the scale.
-     * @param {function(object)} callback callback function that is given the 
-     *      weight object (or undefined) from the read request
      * @returns {undefined}
      */
-    var read = function(callback) {
+    var startReading = function() {
         if (connection) {
             //Read 6-byte data packet from HID scale
             chrome.hid.receive(connection.connectionId, 6, function(buffer) {
@@ -308,13 +243,29 @@
                     weight.amount = parseFloat((weight.amount * 0.1).toFixed(1));
                 }
                 
-                if (typeof callback === 'function') {
-                    callback(weight);
+                fireListeners(scale.Event.READ, weight);
+                if (lastWeight === 0 && weight.amount > 0) {
+                    fireListeners(scale.Event.ADDED);
                 }
+                if (lastWeight > 0 && weight.amount === 0) {
+                    fireListeners(scale.Event.REMOVED);
+                }
+                
+                if (weight.stable && lastWeight === weight.amount) {
+                    consecutive++;
+                }
+                else {
+                    consecutive = 0;
+                }
+                
+                if (consecutive === scale.accuracyConsecutive) {
+                    fireListeners(scale.Event.STABLE, weight);
+                    consecutive = 0;
+                }
+                
+                lastWeight = weight.amount;
+                startReading();
             });
-        }
-        else if (typeof callback === 'function') {
-            callback();
         }
     };
     
@@ -331,6 +282,7 @@
                         if (hidConnectInfo) {
                             connection = hidConnectInfo;
                             scale.isConnected = true;
+                            startReading();
                         }
                         else {
                             scale.errorConnecting = true;
@@ -382,4 +334,4 @@
     };
     
     window.addEventListener('load', scale.initialize);    
-})(window, Math);
+})(window);
