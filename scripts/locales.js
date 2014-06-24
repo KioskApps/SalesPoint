@@ -68,12 +68,15 @@ locales.setLanguage = function(locale) {
     $('#page-complete .complete-thanks').html(locale.pageCompleteThanks.message);
     $('#page-complete .complete-remove-bags').html(locale.pageCompleteBags.message);
 
-    $('.overlays .cancel').html(locale.overlayCancel.message);
-    $('.overlays .continue').html(locale.overlayContinue.message);
+    $('#overlays .cancel').html(locale.overlayCancel.message);
+    $('#overlays .continue').html(locale.overlayContinue.message);
+    $('#overlays .return').html(locale.overlayReturn.message);
+    $('#overlays .confirm').html(locale.overlayConfirm.message);
 
     $('#overlay-large-item .message').html(locale.overlayLargeItem.message);
     $('#overlay-type-in-sku .message').html(locale.overlaySku.message);
     $('#overlay-call-attendant .message').html(locale.overlayCallAttendant.message);
     $('#overlay-scale .message').html(locale.overlayScale.message);
     $('#overlay-scale .wait p').html(locale.overlayScaleWait.message);
+    $('#overlay-cancel .message').html(locale.overlayCancelTransaction.message);
 };

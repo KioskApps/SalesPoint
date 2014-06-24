@@ -46,5 +46,3 @@ data.initialize = function() {
         }
     }, data.SPREADSHEET_ID);
 };
-
-window.addEventListener('load', data.initialize);

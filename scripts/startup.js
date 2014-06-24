@@ -130,7 +130,7 @@ startup.startScaleTest = function() {
         $('#page-startup .scalepermission .status').removeClass('fail').addClass('success');
         scale.addEventListener(scale.Event.ADDED, startup.scaleAdded);
         scale.addEventListener(scale.Event.REMOVED, startup.scaleRemoved);
-        scale.getWeightOunces(startup.scaleWeight);      
+        scale.getWeightOunces(startup.scaleWeight);
     }
     else {
         $('#page-startup .scalepermission .status').removeClass('success').addClass('fail');  

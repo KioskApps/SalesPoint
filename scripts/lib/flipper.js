@@ -90,9 +90,11 @@
     /**
      * Opens the provided overlay.
      * @param {string|jQuery} overlay jQuery selector of the overlay to open
+     * @param afterOpen {function} optional function to call after opening the 
+     *      overlay
      * @returns {undefined}
      */
-    flipper.openOverlay = function(overlay) {
+    flipper.openOverlay = function(overlay, afterOpen) {
         //Initialize the jQuery overlay/overlays selectors
         if (!$overlay) {
             $overlay = $(flipper.overlay);
@@ -103,6 +105,13 @@
         
         var $o = $(overlay);
         $o.trigger(flipper.Event.BEFORE_OPEN);
+        
+        if ($overlay.is(':visible')) {
+            flipper.closeOverlay('', function() {
+                flipper.openOverlay(overlay, afterOpen);
+            });
+            return;
+        }
         
         //Open the main overlay
         $overlay.addClass('open');
@@ -116,14 +125,19 @@
             $overlay.find('.foreground-container').removeClass('foreground-in');
             $overlay.find('.background').removeClass('background-in');
             $o.trigger(flipper.Event.AFTER_OPEN);
+            if (typeof afterOpen === 'function') {
+                afterOpen();
+            }
         }, cssSpeed);
     };
     /**
      * Closes the specified overlay.
      * @param {string|jQuery} overlay jQuery selector of the overlay to close
+     * @param afterClose {function} optional function to call after closing the 
+     *      overlay
      * @returns {undefined}
      */
-    flipper.closeOverlay = function(overlay) {
+    flipper.closeOverlay = function(overlay, afterClose) {
         //Initialize the jQuery overlay/overlays selectors
         if (!$overlay) {
             $overlay = $(flipper.overlay);
@@ -151,6 +165,10 @@
             
             $overlay.find('.foreground-container').removeClass('foreground-out');
             $overlay.find('.background').removeClass('background-out');
+            $o.trigger(flipper.Event.AFTER_CLOSE);
+            if (typeof afterClose === 'function') {
+                afterClose();
+            }
         }, cssSpeed);
     };
     

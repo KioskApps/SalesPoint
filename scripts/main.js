@@ -48,7 +48,13 @@ main.initialize = function() {
     scanner.addTrigger('.current');
     swiper.addTrigger('.current');
     scale.addEventListener(scale.Event.ADDED, main.scaleItemAdded);
-    scale.addEventListener(scale.Event.REMOVED, main.scaleItemRemoved);
+    scale.addEventListener(scale.Event.REMOVED, main.scaleItemRemoved);    
+    $('.simulate.card').click(function() {
+        var e = document.createEvent('Events');
+        e.initEvent('keypress', true, true);
+        e.keyCode = swiper.bypass;
+        document.dispatchEvent(e); 
+    });
     
     /*
      * Add Listeners
@@ -140,7 +146,9 @@ main.initialize = function() {
     $('.return-payment-methods').click(function() {
         flipper.openPage('#page-payment-options');
     });
-    $('.return-main-menu').click(main.start);
+    $('.return-main-menu').click(function() {
+        flipper.openOverlay('#overlay-cancel');
+    });
     
     //Overlay Close Buttons
     $('#overlay-error .continue').click(main.closeOverlay);
@@ -149,6 +157,7 @@ main.initialize = function() {
     $('#overlay-large-item .cancel').click(main.closeOverlay);
     $('#overlay-type-in-sku .cancel').click(main.closeOverlay);
     $('#overlay-call-attendant .continue').click(main.closeOverlay);
+    $('#overlay-cancel .return').click(main.closeOverlay);
     
     //SKU Overlay
     $('#overlay-type-in-sku').on(flipper.Event.BEFORE_OPEN, function() {
@@ -161,11 +170,19 @@ main.initialize = function() {
     $('#overlay-type-in-sku .continue').click(function() {
         var sku = $('#overlay-type-in-sku #sku-query').val();
         flipper.closeOverlay();
-        main.addItemToReceipt(sku);
+        if (sku.length > 0) {
+            main.addItemToReceipt(sku);
+        }
     });
+    $('#overlay-cancel .confirm').click(function() {
+        flipper.closeOverlay();
+        main.start();
+    });    
     
+    //Scale Overlay
     $('#overlay-scale .cancel').click(function() {
         main.scaleActive = false;
+        scanner.scanning = true;
         flipper.closeOverlay('#overlay-scale');
     });
     
@@ -233,7 +250,7 @@ main.productSearch = function(query) {
     }
     else {
         setTimeout(function() {
-            for (var i = 0; i< data.productsArray.length; i++) {
+            for (var i = 0; i < data.productsArray.length; i++) {
                 var product = data.productsArray[i];
 
                 var searchTerm = query.toLowerCase();

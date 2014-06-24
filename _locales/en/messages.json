@@ -171,6 +171,14 @@
         "message": "Continue",
         "description": "Continue button"
     },
+    "overlayReturn": {
+        "message": "Return to Checkout",
+        "description": "Return to the checkout page"
+    },
+    "overlayConfirm": {
+        "message": "Confirm Cancel",
+        "description": "Confirm the cancellation of the transaction"
+    },
     
     "overlayLargeItem": {
         "message": "Please wait and an attendant will be with you shortly to scan your large item.",
@@ -191,5 +199,9 @@
     "overlayScaleWait": {
         "message": "Please wait one moment...",
         "description": "Instruct the user to wait for the scale to finish weighing"
+    },
+    "overlayCancelTransaction": {
+        "message": "Are you sure you wish to cancel your transaction?",
+        "description": "Ask the user if they are sure they wish to cancel the transaction"
     }
 }

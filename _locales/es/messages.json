@@ -171,13 +171,21 @@
         "message": "Continuar",
         "description": "Continue button"
     },
+    "overlayReturn": {
+        "message": "Retorno",
+        "description": "Return to the checkout page"
+    },
+    "overlayConfirm": {
+        "message": "Confirmar Cancelar",
+        "description": "Confirm the cancellation of the transaction"
+    },
     
     "overlayLargeItem": {
         "message": "Por favor, espera y un acompa&ntilde;ante estar&aacute; con usted en breve para escanear su &iacute;tem grande.",
         "description": "Instruct the user to wait for an attendant to scan their large item"
     },
     "overlaySku": {
-        "message": "Utilice el teclado en pantalla para introducir SKU de un producto, a continuación, seleccione \"Continuar\" para añadirlo a sus &iacute;tems.",
+        "message": "Utilice el teclado en pantalla para introducir SKU de un producto, a continuaci&oacute;n, seleccione \"Continuar\" para a&ntilde;adirlo a sus &iacute;tems.",
         "description": "Instruct the user to use the on screen keyboard to type in an SKU"
     },
     "overlayCallAttendant": {
@@ -191,5 +199,9 @@
     "overlayScaleWait": {
         "message": "Por favor, espere un momento...",
         "description": "Instruct the user to wait for the scale to finish weighing"
+    },
+    "overlayCancelTransaction": {
+        "message": "Est&aacute; seguro que desea cancelar la transacci&oacute;n?",
+        "description": "Ask the user if they are sure they wish to cancel the transaction"
     }
 }
